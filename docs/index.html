@@ -9,15 +9,15 @@
 <script data-autoinsert="1" src="rec/js/00-data.js"></script>
 <script data-autoinsert="1" src="rec/js/99-main.js"></script>
 </head>
-<body action="#" onaction="return false;">
+<body>
 <form>
 <fieldset>
-<legend>Puesto</legend>
+<legend>Datos</legend>
 <!--p>
 		<label for="rpt">Puesto RPT</label> <input id="rpt" type="number" min="722398" max="5561584"/>
 	</p-->
 <p>
-<label for="grupo">Grupo</label> <select id="grupo" name="grupo">
+<label for="f1_grupo">Grupo</label> <select id="f1_grupo" name="grupo">
 <option></option>
 <option>A1</option>
 <option>A2</option>
@@ -28,46 +28,87 @@
 </select>
 </p>
 <p>
-<label for="nivel">Nivel</label> <input id="nivel" max="30" min="1" name="nivel" type="number"/>
+<label for="f1_nivel">Nivel</label> <input id="f1_nivel" max="30" min="1" name="nivel" type="number"/>
+</p>
+<p>
+<label for="f1_especifico"><abbr title="Complemento">C.</abbr> específico</label> <input id="f1_especifico" max="50830" min="1511" name="especifico" required="" step="0.01" type="number"/> €/año
+		</p>
+<p>
+<label for="f1_productividad">Productividad</label> <input id="f1_productividad" min="0" name="productividad" required="" step="0.01" type="number" value="0"/> €/año
+		</p>
+<p>
+<label for="f1_irpf">IRPF</label> <input id="f1_irpf" max="100" min="0" name="irpf" required="" step="0.01" type="number" value="13.37"/> %
+		</p>
+<p>
+<label for="f1_ss">S.S.</label> <input id="f1_ss" max="100" min="0" name="ss" required="" step="0.01" type="number" value="4.7"/> %
+		</p>
+<div style="display:none">
+<input data-type="number" id="f1_base" name="base" required="" type="hidden"/>
+<input data-type="number" id="f1_extra" name="extra" required="" type="hidden"/>
+<input data-type="number" id="f1_destino" name="destino" required="" type="hidden"/>
+<input data-type="number" id="f1_muface" name="muface" required="" type="hidden"/>
+</div>
+</fieldset>
+</form>
+<form style="display:none;">
+<fieldset>
+<legend>Puesto</legend>
+<!--p>
+		<label for="rpt">Puesto RPT</label> <input id="rpt" type="number" min="722398" max="5561584"/>
+	</p-->
+<p>
+<label for="f2_grupo">Grupo</label> <select id="f2_grupo" name="grupo">
+<option></option>
+<option>A1</option>
+<option>A2</option>
+<option>B</option>
+<option>C1</option>
+<option>C2</option>
+<option>E</option>
+</select>
+</p>
+<p>
+<label for="f2_nivel">Nivel</label> <input id="f2_nivel" max="30" min="1" name="nivel" type="number"/>
 </p>
 </fieldset>
 <fieldset>
 <legend>Retribuciones</legend>
 <p>
-<label for="base">Base</label> <input id="base" max="14573" min="7206" name="base" required="" step="0.01" type="number"/> €/año
+<label for="f2_base">Base</label> <input id="f2_base" max="14573" min="7206" name="base" required="" step="0.01" type="number"/> €/año
 	</p>
 <p>
-<label for="extra">Extra</label> <input id="extra" max="794" min="600" name="extra" required="" step="0.01" type="number"/> €/mes
+<label for="f2_extra">Extra</label> <input id="f2_extra" max="794" min="600" name="extra" required="" step="0.01" type="number"/> €/mes
 	</p>
 <p>
-<label for="destino"><abbr title="Complemento">C.</abbr> destino</label> <input id="destino" max="14851" min="1407" name="destino" required="" step="0.01" type="number"/> €/año
+<label for="f2_destino"><abbr title="Complemento">C.</abbr> destino</label> <input id="f2_destino" max="14851" min="1407" name="destino" required="" step="0.01" type="number"/> €/año
 	</p>
 <p>
-<label for="especifico"><abbr title="Complemento">C.</abbr> específico</label> <input id="especifico" max="50830" min="1511" name="especifico" required="" step="0.01" type="number"/> €/año
+<label for="f2_especifico"><abbr title="Complemento">C.</abbr> específico</label> <input id="f2_especifico" max="50830" min="1511" name="especifico" required="" step="0.01" type="number"/> €/año
 	</p>
 <p>
-<label for="productividad">Productividad</label> <input id="productividad" min="0" name="productividad" required="" step="0.01" type="number" value="0"/> €/año
+<label for="f2_productividad">Productividad</label> <input id="f2_productividad" min="0" name="productividad" required="" step="0.01" type="number" value="0"/> €/año
 	</p>
 </fieldset>
 <fieldset>
 <legend>Deducciones</legend>
 <p>
-<label for="irpf">IRPF</label> <input id="irpf" max="100" min="0" name="irpf" required="" step="0.01" type="number" value="13.37"/> %
+<label for="f2_irpf">IRPF</label> <input id="f2_irpf" max="100" min="0" name="irpf" required="" step="0.01" type="number" value="13.37"/> %
 	</p>
 <p>
-<label for="ss">S.S.</label> <input id="ss" max="100" min="0" name="ss" required="" step="0.01" type="number" value="4.7"/> %
+<label for="f2_ss">S.S.</label> <input id="f2_ss" max="100" min="0" name="ss" required="" step="0.01" type="number" value="4.7"/> %
 	</p>
 <p>
-<label for="muface">Muface</label> <input id="muface" max="50" min="20" name="muface" required="" step="0.01" type="number"/> €/mes
+<label for="f2_muface">Muface</label> <input id="f2_muface" max="50" min="20" name="muface" required="" step="0.01" type="number"/> €/mes
 	</p>
 </fieldset>
+</form>
 <fieldset id="resultado">
 <legend>Resultado</legend>
 <p class="error">
 	Rellena todos los campos correctamente para ver el resultado.
 </p>
 <div class="msg">
-<table class="dosDecimales">
+<table><!--class="dosDecimales"-->
 <thead>
 <tr>
 <th rowspan="2"></th>
@@ -75,8 +116,8 @@
 <th colspan="2">Mensual</th>
 </tr>
 <tr>
-<th>Normal</th>
-<th>Extra</th>
+<th>Normal (12)</th>
+<th>Extra (2)</th>
 </tr>
 </thead>
 <tbody>
@@ -96,6 +137,5 @@
 </table>
 </div>
 </fieldset>
-</form>
 </body>
 </html>

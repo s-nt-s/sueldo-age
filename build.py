@@ -50,8 +50,18 @@ def post_render(html, **kwargs):
     soup = bs4.BeautifulSoup(html, 'lxml')
     for i in soup.findAll(["input", "select"]):
         id = i.attrs.get("id")
-        if "name" not in i.attrs:
+        if id is not None and "name" not in i.attrs:
             i.attrs["name"]=id
+    for i, f in enumerate(soup.findAll("form")):
+        pre = "f%s_" % (i+1)
+        for l in f.findAll("label"):
+            fr = l.attrs.get("for")
+            if fr is not None:
+                l.attrs["for"]=pre+l.attrs["for"]
+        for l in f.select("*[id]"):
+            fr = l.attrs.get("id")
+            if fr is not None:
+                l.attrs["id"]=pre+l.attrs["id"]
     return str(soup)
 
 j = Jnj2("template/", "docs/", post=post_render)

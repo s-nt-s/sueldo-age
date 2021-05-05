@@ -35,7 +35,7 @@ jQuery.fn.extend({
 });
 
 function chg(id, fnc) {
-  $("#"+id).change(fnc).change();
+  $("*[name="+id+"]").change(fnc).change();
 }
 
 function do_round(v) {
@@ -55,7 +55,7 @@ function do_round(v) {
 }
 
 function do_salary() {
-  var f=$("form");
+  var f=$("form:visible");
   if (!f[0].checkValidity()) {
     $("#resultado").find("p.error").show();
     $("#resultado").find("div.msg").hide();
@@ -96,9 +96,10 @@ $(document).ready(function(){
     var v = this.value;
     var r=retribuciones[v];
     if (r==null) return;
-    $("#muface").val(muface[v]);
-    $("#base").val(r.base.sueldo);
-    $("#extra").val(r.diciembre.sueldo);
+    var f=$(this).closest("form");
+    f.find("*[name=muface]").val(muface[v]);
+    f.find("*[name=base]").val(r.base.sueldo);
+    f.find("*[name=extra]").val(r.diciembre.sueldo);
     do_salary();
   });
   chg("nivel", function(){
@@ -106,7 +107,8 @@ $(document).ready(function(){
     var v = parseInt(this.value, 10);
     var x = retribuciones.niveles[v];
     if (x==null) return;
-    $("#destino").val(x);
+    var f=$(this).closest("form");
+    f.find("*[name=destino]").val(x);
     do_salary();
   });
   $("form :input").change(do_salary);
