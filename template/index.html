@@ -1,0 +1,108 @@
+<!DOCtype html>
+<html lang="es">
+	<head>
+		<base target="_blank" />
+    <meta charset="UTF-8">
+    <title>Suelo AGE</title>
+		{% for c in css %}
+      <link href="{{c}}" rel="stylesheet" type="text/css" data-autoinsert="1"/>
+    {% endfor %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    {% for js in javascript %}
+      <script src="{{js}}" data-autoinsert="1"></script>
+    {% endfor %}
+
+	</head>
+	<body action="#" onaction="return false;">
+		<form>
+<fieldset>
+	<legend>Puesto</legend>
+	<!--p>
+		<label for="rpt">Puesto RPT</label> <input id="rpt" type="number" min="{{rpt.min}}" max="{{rpt.max}}"/>
+	</p-->
+	<p>
+		<label for="grupo">Grupo</label> <select id="grupo">
+				<option/>
+				<option>A1</option>
+				<option>A2</option>
+				<option>B</option>
+				<option>C1</option>
+				<option>C2</option>
+				<option>E</option>
+			</select>
+		</p>
+		<p>
+			<label for="nivel">Nivel</label> <input id="nivel" type="number" min="{{nivel.min}}" max="{{nivel.max}}"/>
+		</p>
+</fieldset>
+
+<fieldset>
+	<legend>Retribuciones</legend>
+	<p>
+		<label for="base">Base</label> <input id="base" required type="number" step="0.01" min="{{sueldo.min}}" max="{{sueldo.max}}"/> €/año
+	</p>
+	<p>
+		<label for="extra">Extra</label> <input id="extra" required type="number" step="0.01" min="{{extra.min}}" max="{{extra.max}}"/> €/mes
+	</p>
+	<p>
+		<label for="destino"><abbr title="Complemento">C.</abbr> destino</label> <input id="destino" required type="number" step="0.01" min="{{cdestino.min}}" max="{{cdestino.max}}"/> €/año
+	</p>
+	<p>
+		<label for="especifico"><abbr title="Complemento">C.</abbr> específico</label> <input id="especifico" required type="number" step="0.01" min="{{especifico.min}}" max="{{especifico.max}}"/> €/año
+	</p>
+	<p>
+		<label for="productividad">Productividad</label> <input id="productividad" required type="number" step="0.01" min="0" value="0"/> €/año
+	</p>
+</fieldset>
+
+<fieldset>
+<legend>Deducciones</legend>
+	<p>
+		<label for="irpf">IRPF</label> <input id="irpf" required value="13.37" type="number" step="0.01" min="0" max="100"/> %
+	</p>
+	<p>
+		<label for="ss">S.S.</label> <input id="ss" required type="number" value="4.7" step="0.01" min="0" max="100"/> %
+	</p>
+	<p>
+		<label for="muface">Muface</label> <input id="muface" required type="number" step="0.01" min="{{muface.min}}" max="{{muface.max}}"/> €/mes
+	</p>
+</fieldset>
+
+<fieldset id="resultado">
+<legend>Resultado</legend>
+<p class="error">
+	Rellena todos los campos correctamente para ver el resultado.
+</p>
+<div class="msg">
+	<table><!--class="dosDecimales"-->
+		<thead>
+			<tr>
+				<th rowspan="2"></th>
+				<th rowspan="2">Anual</th>
+				<th colspan="2">Mensual</th>
+			</tr>
+			<tr>
+				<th>Normal (12)</th>
+				<th>Extra (2)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>Bruto</th>
+				<td id="bruto_anual" class="rg"></td>
+				<td id="bruto_mes" class="rg"></td>
+				<td id="bruto_extra" class="rg"></td>
+			</tr>
+			<tr>
+				<th>Neto</th>
+				<td id="neto_anual" class="rg"></td>
+				<td id="neto_mes" class="rg"></td>
+				<td id="neto_extra" class="rg"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</fieldset>
+</form>
+	</body>
+</html>

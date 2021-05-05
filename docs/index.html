@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_blank"/>
+<meta charset="utf-8"/>
+<title>Suelo AGE</title>
+<link data-autoinsert="1" href="rec/main.css" rel="stylesheet" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script data-autoinsert="1" src="rec/js/00-data.js"></script>
+<script data-autoinsert="1" src="rec/js/99-main.js"></script>
+</head>
+<body action="#" onaction="return false;">
+<form>
+<fieldset>
+<legend>Puesto</legend>
+<!--p>
+		<label for="rpt">Puesto RPT</label> <input id="rpt" type="number" min="722398" max="5561584"/>
+	</p-->
+<p>
+<label for="grupo">Grupo</label> <select id="grupo" name="grupo">
+<option></option>
+<option>A1</option>
+<option>A2</option>
+<option>B</option>
+<option>C1</option>
+<option>C2</option>
+<option>E</option>
+</select>
+</p>
+<p>
+<label for="nivel">Nivel</label> <input id="nivel" max="30" min="1" name="nivel" type="number"/>
+</p>
+</fieldset>
+<fieldset>
+<legend>Retribuciones</legend>
+<p>
+<label for="base">Base</label> <input id="base" max="14573" min="7206" name="base" required="" step="0.01" type="number"/> €/año
+	</p>
+<p>
+<label for="extra">Extra</label> <input id="extra" max="794" min="600" name="extra" required="" step="0.01" type="number"/> €/mes
+	</p>
+<p>
+<label for="destino"><abbr title="Complemento">C.</abbr> destino</label> <input id="destino" max="14851" min="1407" name="destino" required="" step="0.01" type="number"/> €/año
+	</p>
+<p>
+<label for="especifico"><abbr title="Complemento">C.</abbr> específico</label> <input id="especifico" max="50830" min="1511" name="especifico" required="" step="0.01" type="number"/> €/año
+	</p>
+<p>
+<label for="productividad">Productividad</label> <input id="productividad" min="0" name="productividad" required="" step="0.01" type="number" value="0"/> €/año
+	</p>
+</fieldset>
+<fieldset>
+<legend>Deducciones</legend>
+<p>
+<label for="irpf">IRPF</label> <input id="irpf" max="100" min="0" name="irpf" required="" step="0.01" type="number" value="13.37"/> %
+	</p>
+<p>
+<label for="ss">S.S.</label> <input id="ss" max="100" min="0" name="ss" required="" step="0.01" type="number" value="4.7"/> %
+	</p>
+<p>
+<label for="muface">Muface</label> <input id="muface" max="50" min="20" name="muface" required="" step="0.01" type="number"/> €/mes
+	</p>
+</fieldset>
+<fieldset id="resultado">
+<legend>Resultado</legend>
+<p class="error">
+	Rellena todos los campos correctamente para ver el resultado.
+</p>
+<div class="msg">
+<table class="dosDecimales">
+<thead>
+<tr>
+<th rowspan="2"></th>
+<th rowspan="2">Anual</th>
+<th colspan="2">Mensual</th>
+</tr>
+<tr>
+<th>Normal</th>
+<th>Extra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>Bruto</th>
+<td class="rg" id="bruto_anual"></td>
+<td class="rg" id="bruto_mes"></td>
+<td class="rg" id="bruto_extra"></td>
+</tr>
+<tr>
+<th>Neto</th>
+<td class="rg" id="neto_anual"></td>
+<td class="rg" id="neto_mes"></td>
+<td class="rg" id="neto_extra"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</fieldset>
+</form>
+</body>
+</html>
