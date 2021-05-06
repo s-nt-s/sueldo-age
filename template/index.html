@@ -66,16 +66,19 @@
 		</label>
 		<input id="ss" required type="number" value="4.4453" step="0.0001" min="0" max="100"/> %
 	</p>
-	<p>
-		<span class="label">
+	<fieldset class="compact">
+		<legend>
 			Trienios
 			<sup><a href="#n3">3</a></sup>
-		</span>
+		</legend>
 		{% for g in grupos %}
+			{% if loop.index == 1 %}<p>
+			{% elif loop.index % 3 == 1 %}</p><p>{%endif%}
+		 <label for="tri{{g}}" class="free">{{g}}</label>
 		 <input id="tri{{g}}" required type="number" value="0" step="1" min="0" max="17" style="width:3em"/>
-		 <label for="tri{{g}}" class="free">{{g}}</label>{% if loop.index<(grupos|length)%}, {%endif%}
  	 	{% endfor %}
-	</p>
+		</p>
+	</fieldset>
 <!--/fieldset-->
 
 
