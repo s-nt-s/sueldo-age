@@ -56,19 +56,39 @@ function do_round(v) {
   return v;
 }
 
-function do_salary() {
+function safe_div(n, x) {
+  var aux = Math.pow(10, n.toString().length);
+  n = (n*aux)/(x*aux);
+  return n;
+}
+
+function _do_salary() {
   var f=$("form:visible");
   if (!f[0].checkValidity()) {
-    $("#resultado").find("p.error").show();
-    $("#resultado").find("div.msg").hide();
-    return;
+    return false;
   }
 
   var d=f.serializeDict();
-  d.irpf = d.irpf /100;
-  d.ss = d.ss / 100;
+  d.irpf = safe_div(d.irpf, 100);
+  d.ss = safe_div(d.ss, 100);
+
+
+  d.muface = muface[d.grupo];
+  if (d.muface==null) return false;
+
+  var r=retribuciones[d.grupo];
+  if (r==null) return false;
+
+  d.base = r.base.sueldo;
+  d.extra = r.diciembre.sueldo;
+
+  var n = retribuciones.niveles[d.nivel];
+  if (n==null) return false;
+
+  d.destino = n;
 
   console.log(d);
+
   var trienio=0;
   var trienio_extra=0;
   GRUPOS.forEach((g, i) => {
@@ -99,8 +119,18 @@ function do_salary() {
 
   $("#neto_anual").html(do_round((neto_mes*12)+(neto_extra*2)));
 
-  $("#resultado").find("p.error").hide();
-  $("#resultado").find("div.msg").show();
+  return true;
+}
+
+
+function do_salary() {
+  if(_do_salary()) {
+    $("#resultado").find("p.error").hide();
+    $("#resultado").find("div.msg").show();
+  } else {
+    $("#resultado").find("p.error").show();
+    $("#resultado").find("div.msg").hide();
+  }
 }
 
 $(document).ready(function(){
@@ -109,25 +139,6 @@ $(document).ready(function(){
   }).map(function(){
     return this.value;
   }).get();
-  chg("grupo", function(){
-    var v = this.value;
-    var r=retribuciones[v];
-    if (r==null) return;
-    var f=$(this).closest("form");
-    f.find("*[name=muface]").val(muface[v]);
-    f.find("*[name=base]").val(r.base.sueldo);
-    f.find("*[name=extra]").val(r.diciembre.sueldo);
-    do_salary();
-  });
-  chg("nivel", function(){
-    if (this.value.length=='') return;
-    var v = parseInt(this.value, 10);
-    var x = retribuciones.niveles[v];
-    if (x==null) return;
-    var f=$(this).closest("form");
-    f.find("*[name=destino]").val(x);
-    do_salary();
-  });
   $("form :input").change(do_salary);
   do_salary();
 })
