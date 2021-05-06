@@ -110,14 +110,14 @@ function _do_salary(silent) {
   $("#bruto_mes").html(do_round(bruto_mes/12));
 
   var bruto_extra = d.extra*2 + trienio_extra + (((d.destino + d.especifico)/14)*2);
-  $("#bruto_extra").html(do_round(bruto_extra));
+  $("#bruto_extra").html(do_round(bruto_extra/2));
 
   var neto_mes = (d.base + trienio + d.productividad)/12 + (d.destino + d.especifico)/14;
   neto_mes = neto_mes * (1-d.irpf-d.ss) - d.muface;
   neto_mes = neto_mes - ((bruto_extra/12)*d.ss);
   $("#neto_mes").html(do_round(neto_mes));
 
-  var neto_extra = (bruto_extra * (1-d.irpf) /2) - d.muface;
+  var neto_extra = ((bruto_extra/2) * (1-d.irpf)) - d.muface;
   $("#neto_extra").html(do_round(neto_extra));
 
   $("#neto_anual").html(do_round((neto_mes*12)+(neto_extra*2)));
