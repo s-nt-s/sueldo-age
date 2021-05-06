@@ -1,6 +1,7 @@
 body {
-    font-family: arial,sans serif;
-    font-size: 11pt;
+  font-family: arial,sans serif;
+  font-size: 11pt;
+  margin: 0;
 }
 table {
 	margin-top: 14px;
@@ -34,17 +35,17 @@ tr > td:first-child {
 .rg {
   text-align: right;
 }
-label {
+label:not(.free), span.label {
 	display: inline-block;
 	min-width: 7em;
 }
-select, input {
+select, input[type=number] {
 	width: 7em;
 }
-fieldset {
+fieldset, div.fieldset {
 	margin: 16px;
 }
-input {
+input[type=number] {
 	text-align: right;
 }
 .dosDecimales span.nm.dc0:after {
@@ -55,4 +56,33 @@ input {
 }
 .dosEnteros span.en1:before {
   content: " "
+}
+header, footer {
+  padding: 1em;
+  clear: both;
+  margin: 0px;
+  color: #fff !important;
+  background-color: #3a3a3a !important;
+}
+footer {
+  margin-top: 16px !important;
+}
+footer p:first-child {
+	margin-top: 0;
+}
+footer p:last-child {
+	margin-bottom: 0;
+}
+header a, footer a {
+  color: inherit;
+}
+fieldset.hidefls > legend {
+	display: none;
+}
+fieldset.hidefls {
+	border: none;
+	padding: 0;
+}
+fieldset.hidefls .firstinfls {
+	margin-top: 0;
 }

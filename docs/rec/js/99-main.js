@@ -1,3 +1,5 @@
+var GRUPOS=null;
+
 jQuery.fn.extend({
   serializeDict: function() {
     var obj = {}
@@ -61,6 +63,7 @@ function do_salary() {
     $("#resultado").find("div.msg").hide();
     return;
   }
+
   var d=f.serializeDict();
   d.irpf = d.irpf /100;
   d.ss = d.ss / 100;
@@ -68,6 +71,15 @@ function do_salary() {
   console.log(d);
   var trienio=0;
   var trienio_extra=0;
+  GRUPOS.forEach((g, i) => {
+    var tri = parseInt(f.find("*[name='tri"+g+"']").val(), 10);
+    if (Number.isNaN(tri)) return;
+    var r=retribuciones[g];
+    if (r==null) return;
+    trienio = trienio + tri*(r.base.trienio);
+    trienio_extra = trienio_extra + tri*(r.diciembre.trienio);
+  });
+
   var bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + trienio + (trienio_extra*2);
   $("#bruto_anual").html(do_round(bruto_anual));
 
@@ -92,6 +104,11 @@ function do_salary() {
 }
 
 $(document).ready(function(){
+  GRUPOS=$("*[name=grupo]:eq(0) option[value!='']").filter(function(){
+    return this.value;
+  }).map(function(){
+    return this.value;
+  }).get();
   chg("grupo", function(){
     var v = this.value;
     var r=retribuciones[v];

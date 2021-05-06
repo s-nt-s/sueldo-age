@@ -8,6 +8,7 @@ from core.retribuciones import Retribuciones
 from core.muface import Muface
 from core.rpt import RPT
 from core.j2 import Jnj2
+from core.config import CFG
 from math import ceil
 import bs4
 
@@ -31,9 +32,9 @@ def minmax(arr):
     return r
 
 rt=Retribuciones()
-r=rt.get(2021)
+r=rt.get(CFG.retribuciones.last)
 mf=Muface()
-m=mf.get(2021)
+m=mf.get(CFG.muface.last)
 rp=RPT()
 t=rp.get()
 
@@ -62,6 +63,16 @@ def post_render(html, **kwargs):
             fr = l.attrs.get("id")
             if fr is not None:
                 l.attrs["id"]=pre+l.attrs["id"]
+    for a in soup.findAll("a"):
+        href = a.attrs.get("href")
+        if href is None:
+            continue
+        if href.startswith("#"):
+            id = href[1:]
+            nt = soup.find(None, id=id)
+            a.attrs["title"]=nt.get_text().strip()
+        else:
+            a.attrs["target"]="_blank"
     return str(soup)
 
 j = Jnj2("template/", "docs/", post=post_render)
@@ -76,5 +87,7 @@ j.save("index.html",
     extra=minmax(extra),
     muface=minmax(m.values()),
     cdestino=minmax(r["niveles"].values()),
-    especifico=minmax(p["complemento"] for p in t.values())
+    especifico=minmax(p["complemento"] for p in t.values()),
+    grupos=("A1", "A2", "B", "C1", "C2", "E"),
+    cfg=CFG
 )
