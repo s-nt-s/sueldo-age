@@ -61,6 +61,16 @@ function safe_div(n, x) {
   n = (n*aux)/(x*aux);
   return n;
 }
+function safe_sum() {
+  if (arguments.length==0) return 0;
+  if (arguments.length==1) return arguments[0];
+  var arr = Array.from(arguments);
+  var aux = arr.map(function(i){return i.toString().length})
+  aux = Math.max(...aux);
+  aux = Math.pow(10, aux);
+  var sum = arr.reduce(function(t, c) {return t+(c*aux)}, 0);
+  return sum/aux;
+}
 
 function _do_salary(silent) {
   var f=$("form:visible");
@@ -90,29 +100,38 @@ function _do_salary(silent) {
 
   d.destino = n;
 
-  console.log(d);
+  d.trienios={
+    base:[],
+    extra:[]
+  }
 
-  var trienio=0;
-  var trienio_extra=0;
   GRUPOS.forEach((g, i) => {
-    var tri = parseInt(f.find("*[name='tri"+g+"']").val(), 10);
+    var tri = d["tri"+g];
     if (Number.isNaN(tri)) return;
     var r=retribuciones[g];
     if (r==null) return;
-    trienio = trienio + tri*(r.base.trienio);
-    trienio_extra = trienio_extra + tri*(r.diciembre.trienio);
+    delete d["tri"+g];
+    if (tri==0) return;
+    d.trienios[g]=tri;
+    d.trienios.base.push(tri*(r.base.trienio));
+    d.trienios.extra.push(tri*(r.diciembre.trienio));
   });
+  d.trienios.base = safe_sum.apply(this, d.trienios.base);
+  d.trienios.extra = safe_sum.apply(this, d.trienios.extra);
 
-  var bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + trienio + (trienio_extra*2);
+
+  console.log(d);
+
+  var bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + d.trienios.base + (d.trienios.extra*2);
   $("#bruto_anual").html(do_round(bruto_anual));
 
-  var bruto_mes = d.base + d.destino + (((d.destino + d.especifico)/14)*12) + trienio;
+  var bruto_mes = d.base + d.destino + (((d.destino + d.especifico)/14)*12) + d.trienios.base;
   $("#bruto_mes").html(do_round(bruto_mes/12));
 
-  var bruto_extra = d.extra*2 + trienio_extra + (((d.destino + d.especifico)/14)*2);
+  var bruto_extra = d.extra*2 + d.trienios.extra + (((d.destino + d.especifico)/14)*2);
   $("#bruto_extra").html(do_round(bruto_extra/2));
 
-  var neto_mes = (d.base + trienio + d.productividad)/12 + (d.destino + d.especifico)/14;
+  var neto_mes = (d.base + d.trienios.base + d.productividad)/12 + (d.destino + d.especifico)/14;
   neto_mes = neto_mes * (1-d.irpf-d.ss) - d.muface;
   neto_mes = neto_mes - ((bruto_extra/12)*d.ss);
   $("#neto_mes").html(do_round(neto_mes));
