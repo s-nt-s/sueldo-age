@@ -3,6 +3,9 @@ body {
   font-size: 11pt;
   margin: 0;
 }
+main {
+  margin: 8px;
+}
 table {
 	margin-top: 14px;
 	border-spacing: 0px;
@@ -41,9 +44,6 @@ label:not(.free), span.label {
 }
 select, input[type=number] {
 	width: 6em;
-}
-fieldset, div.fieldset {
-	margin: 16px;
 }
 input[type=number] {
 	text-align: right;
