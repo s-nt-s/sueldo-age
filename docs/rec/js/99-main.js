@@ -129,4 +129,5 @@ $(document).ready(function(){
     do_salary();
   });
   $("form :input").change(do_salary);
+  do_salary();
 })
