@@ -62,10 +62,10 @@ function safe_div(n, x) {
   return n;
 }
 
-function _do_salary() {
+function _do_salary(silent) {
   var f=$("form:visible");
   if (!f[0].checkValidity()) {
-    f[0].reportValidity();
+    if(!silent) f[0].reportValidity();
     return false;
   }
 
@@ -124,8 +124,8 @@ function _do_salary() {
 }
 
 
-function do_salary() {
-  if(_do_salary()) {
+function do_salary(silent) {
+  if(_do_salary(silent)) {
     $("#resultado").find("p.error").hide();
     $("#resultado").find("div.msg").show();
   } else {
@@ -141,5 +141,5 @@ $(document).ready(function(){
     return this.value;
   }).get();
   $("form :input").change(do_salary);
-  do_salary();
+  do_salary(true);
 })
