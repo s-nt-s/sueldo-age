@@ -8,3 +8,5 @@ rpt:
   root: https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html
 funciona:
   nominas: https://sede.funciona.gob.es/public/servicios/Mis-Retribuciones
+aeat:
+  irpf: https://www2.agenciatributaria.gob.es/wlpl/PRET-R200/index.zul
