@@ -119,7 +119,6 @@ function _do_salary(silent) {
   d.trienios.base = safe_sum.apply(this, d.trienios.base);
   d.trienios.extra = safe_sum.apply(this, d.trienios.extra);
 
-
   console.log(d);
 
   var bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + d.trienios.base + (d.trienios.extra*2);
