@@ -40,7 +40,7 @@ label:not(.free), span.label {
 	min-width: 7em;
 }
 select, input[type=number] {
-	width: 7em;
+	width: 6em;
 }
 fieldset, div.fieldset {
 	margin: 16px;
