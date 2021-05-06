@@ -65,7 +65,9 @@ function safe_div(n, x) {
 function _do_salary(silent) {
   var f=$("form:visible");
   if (!f[0].checkValidity()) {
-    if(!silent) f[0].reportValidity();
+    if(silent !== true) {
+      f[0].reportValidity();
+    }
     return false;
   }
 
@@ -140,6 +142,7 @@ $(document).ready(function(){
   }).map(function(){
     return this.value;
   }).get();
-  $("form :input").change(do_salary);
+  $("form :input")
+    .change(do_salary);
   do_salary(true);
 })
