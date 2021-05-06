@@ -76,7 +76,7 @@
 		</span>
 		{% for g in grupos %}
 		 <input id="tri{{g}}" required type="number" value="0" step="1" min="0" max="17" style="width:3em"/>
-		 <label for="tri{{g}}" class="free">{{g}}</label>
+		 <label for="tri{{g}}" class="free">{{g}}</label>{% if loop.index<(grupos|length)%}, {%endif%}
  	 	{% endfor %}
 	</p>
 </fieldset>
