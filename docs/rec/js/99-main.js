@@ -65,6 +65,7 @@ function safe_div(n, x) {
 function _do_salary() {
   var f=$("form:visible");
   if (!f[0].checkValidity()) {
+    f[0].reportValidity();
     return false;
   }
 
