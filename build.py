@@ -23,6 +23,13 @@ logging.basicConfig(
     datefmt='%d-%b-%y %H:%M:%S'
 )
 
+GRUPOS=("A1", "A2", "B", "C1", "C2", "E")
+rtb=Retribuciones().get(CFG.retribuciones.last)
+mfc=Muface().get(CFG.muface.last)
+rpt=RPT().get()
+NIVELES=list(map(int,rtb["niveles"].keys()))
+
+
 def minmax(arr):
     arr=list(map(float, arr))
     r={
@@ -31,17 +38,42 @@ def minmax(arr):
     }
     return r
 
-rt=Retribuciones()
-r=rt.get(CFG.retribuciones.last)
-mf=Muface()
-m=mf.get(CFG.muface.last)
-rp=RPT()
-t=rp.get()
+def get_mode(arr, k):
+    if arr is None:
+        return None
+    count={}
+    for a in arr:
+        a = a[k]
+        count[a]=count.get(a, 0) + 1
+    if len(count)==0:
+        return None
+    arr=sorted(count.items(), key=lambda x:(-x[1], x[0]))
+    return arr[0][0]
+
+g_rpt={g:[] for g in GRUPOS}
+for i in rpt.values():
+    g = i["grupo"]
+    if g in GRUPOS:
+        g_rpt[g].append(i)
+
+moda={}
+for g in GRUPOS:
+    moda[g]={}
+    nvl = get_mode(g_rpt[g], "nivel")
+    if nvl is not None:
+        moda[g]["nivel"] = nvl
+    for n in NIVELES:
+        aux = (i for i in g_rpt[g] if i["nivel"]==n)
+        cp = get_mode(aux, "complemento")
+        if cp is not None:
+            moda[g][n]=cp
+    if len(moda[g])==0:
+        del moda[g]
 
 sueldo=set()
 extra=set()
 especifico=set()
-for k, v in r.items():
+for k, v in rtb.items():
     if isinstance(v, dict) and "base" in v:
         sueldo.add(v["base"]["sueldo"])
         extra.add(v["junio"]["sueldo"])
@@ -77,17 +109,18 @@ def post_render(html, **kwargs):
 
 j = Jnj2("template/", "docs/", post=post_render)
 j.create_script("rec/js/00-data.js",
-    muface=m,
-    retribuciones=r
+    MUFACE=mfc,
+    RETRIB=rtb,
+    MODA=moda
 )
 j.save("index.html",
-    rpt=minmax(t.keys()),
-    nivel=minmax(r["niveles"].keys()),
+    rpt=minmax(rpt.keys()),
+    nivel=minmax(NIVELES),
     sueldo=minmax(sueldo),
     extra=minmax(extra),
-    muface=minmax(m.values()),
-    cdestino=minmax(r["niveles"].values()),
-    especifico=minmax(p["complemento"] for p in t.values()),
-    grupos=("A1", "A2", "B", "C1", "C2", "E"),
+    muface=minmax(mfc.values()),
+    cdestino=minmax(rtb["niveles"].values()),
+    especifico=minmax(p["complemento"] for p in rpt.values()),
+    grupos=GRUPOS,
     cfg=CFG
 )

@@ -86,16 +86,16 @@ function _do_salary(silent) {
   d.ss = safe_div(d.ss, 100);
 
 
-  d.muface = muface[d.grupo];
+  d.muface = MUFACE[d.grupo];
   if (d.muface==null) return false;
 
-  var r=retribuciones[d.grupo];
+  var r=RETRIB[d.grupo];
   if (r==null) return false;
 
   d.base = r.base.sueldo;
   d.extra = r.diciembre.sueldo;
 
-  var n = retribuciones.niveles[d.nivel];
+  var n = RETRIB.niveles[d.nivel];
   if (n==null) return false;
 
   d.destino = n;
@@ -108,7 +108,7 @@ function _do_salary(silent) {
   GRUPOS.forEach((g, i) => {
     var tri = d["tri"+g];
     if (Number.isNaN(tri)) return;
-    var r=retribuciones[g];
+    var r=RETRIB[g];
     if (r==null) return;
     delete d["tri"+g];
     if (tri==0) return;
@@ -154,18 +154,6 @@ function do_salary(silent) {
   }
 }
 
-function minLevel(g) {
-  switch (g) {
-    case "A1": return 20;
-    case "A2": return 16;
-    case "B": return 11;
-    case "C1": return 11;
-    case "C2": return 9;
-    case "E": return 7;
-  }
-  return null;
-}
-
 $(document).ready(function(){
   GRUPOS=$("*[name=grupo]:eq(0) option[value!='']").filter(function(){
     return this.value;
@@ -173,10 +161,10 @@ $(document).ready(function(){
     return this.value;
   }).get();
   chg("grupo", function(){
-    var g = minLevel(this.value);
-    if (g==null) return;
+    var md = MODA[this.value]
+    if (md==null || md["nivel"]==null) return;
     var l=$(this).closest("form").find("input[name=nivel]");
-    if (l.val().length==0) l.val(g);
+    if (l.val().length==0) l.val(md["nivel"]);
   });
   $("form :input")
     .change(do_salary);
