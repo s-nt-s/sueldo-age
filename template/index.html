@@ -25,9 +25,8 @@
 			<sup><a href="#n1">1</a></sup>
 		</label>
 		<select id="grupo" required>
-			<option value=""/>
 			{% for g in grupos %}
-			 <option>{{g}}</option>
+			 <option{%if loop.last%} selected{%endif%}>{{g}}</option>
 			{% endfor %}
 		</select>
 	</p>
