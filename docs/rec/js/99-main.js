@@ -154,12 +154,30 @@ function do_salary(silent) {
   }
 }
 
+function minLevel(g) {
+  switch (g) {
+    case "A1": return 20;
+    case "A2": return 16;
+    case "B": return 11;
+    case "C1": return 11;
+    case "C2": return 9;
+    case "E": return 7;
+  }
+  return null;
+}
+
 $(document).ready(function(){
   GRUPOS=$("*[name=grupo]:eq(0) option[value!='']").filter(function(){
     return this.value;
   }).map(function(){
     return this.value;
   }).get();
+  chg("grupo", function(){
+    var g = minLevel(this.value);
+    if (g==null) return;
+    var l=$(this).closest("form").find("input[name=nivel]");
+    if (l.val().length==0) l.val(g);
+  });
   $("form :input")
     .change(do_salary);
   do_salary(true);
