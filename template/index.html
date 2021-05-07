@@ -25,8 +25,9 @@
 			<sup><a href="#n1">1</a></sup>
 		</label>
 		<select id="grupo" required>
+			<option label=" "/>
 			{% for g in grupos %}
-			 <option{%if loop.last%} selected{%endif%}>{{g}}</option>
+			 <option>{{g}}</option>
 			{% endfor %}
 		</select>
 	</p>
@@ -35,7 +36,7 @@
 			Nivel
 			<sup><a href="#n1">1</a></sup>
 		</label>
-		<input id="nivel" required type="number" min="{{nivel.min}}" max="{{nivel.max}}" value="{{nivel.min}}"/>
+		<input id="nivel" required type="number" min="{{nivel.min}}" max="{{nivel.max}}"/>
 	</p>
 	<p>
 		<label for="especifico">
