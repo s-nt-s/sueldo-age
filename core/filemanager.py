@@ -3,11 +3,10 @@ import logging
 from os import makedirs
 from os.path import dirname, realpath
 from pathlib import Path
-from tempfile import gettempdir
-import requests
-from bs4 import BeautifulSoup
 
+import requests
 import yaml
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +124,6 @@ class FileManager:
 
         ext = self.normalize_ext(file.suffix)
 
-
     def load_json(self, file, *args, **kargv):
         with open(file, "r") as f:
             return json.load(f, *args, **kargv)
@@ -140,7 +138,7 @@ class FileManager:
 
     def dump_html(self, file, obj, *args, **kargv):
         if isinstance(obj, BeautifulSoup):
-            obj=str(obj)
+            obj = str(obj)
         with open(file, "w") as f:
             f.write(obj)
 
@@ -163,6 +161,7 @@ class FileManager:
             txt = txt.format(*args, **kargv)
         with open(file, "w") as f:
             f.write(txt)
+
 
 # Mejoras dinamicas en la documentacion
 for mth in dir(FileManager):

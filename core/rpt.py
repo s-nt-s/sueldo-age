@@ -1,19 +1,19 @@
-from .config import CFG
-from .web import Web
-from .filemanager import FM
-import tabula
-from io import StringIO
-import re
-from inspect import getmembers
-from xlrd import open_workbook
-from .decorators import Cache
-
 import logging
+import re
+
+import tabula
+from xlrd import open_workbook
+
+from .config import CFG
+from .decorators import Cache
+from .filemanager import FM
+from .web import Web
 
 logger = logging.getLogger(__name__)
 
 re_space = re.compile(r"  +")
 re_number = re.compile(r"^\d+,\d+$")
+
 
 def to_num(s, safe=False):
     if s is None:
@@ -28,9 +28,10 @@ def to_num(s, safe=False):
         s = s.replace(".", "")
         s = s.replace(",", ".")
         s = float(s)
-    if int(s)==s:
-        s=int(s)
+    if int(s) == s:
+        s = int(s)
     return s
+
 
 def parse(cell, parse_number=True):
     if not cell:
@@ -48,6 +49,7 @@ def parse(cell, parse_number=True):
         return v if len(v) else None
     return v
 
+
 class RPT:
     def __init__(self):
         self.root = CFG.rpt.root
@@ -56,9 +58,10 @@ class RPT:
     def get(self):
         w = Web()
         w.get(self.root)
-        done=set()
-        files=set()
-        urls = set(a.attrs["href"] for a in w.soup.select("#cont_gen div.title-item-div a"))
+        done = set()
+        files = set()
+        urls = set(a.attrs["href"]
+                   for a in w.soup.select("#cont_gen div.title-item-div a"))
         for url in sorted(urls):
             org = url.rsplit("-", 1)
             org = org[-1]
@@ -87,7 +90,7 @@ class RPT:
                     return data[k]
             raise Exception(file+" no tiene ningún campo: " + ", ".join(args))
 
-        data={}
+        data = {}
         for file in sorted(files):
             head = None
             wb = open_workbook(file)
@@ -97,11 +100,11 @@ class RPT:
                 if len(row) < 2:
                     continue
                 if not isinstance(row[0], int):
-                    head=row
+                    head = row
                 else:
-                    row = {k:v for k,v in zip(head, row)}
+                    row = {k: v for k, v in zip(head, row)}
                     id = get_val(file, row, "Puesto")
-                    data[id]={
+                    data[id] = {
                         "grupo": get_val(file, row, "Gr/Sb"),
                         "nivel": get_val(file, row, "Nivel"),
                         "complemento": get_val(file, row, "C.Específ.")

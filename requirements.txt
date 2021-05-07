@@ -1,0 +1,10 @@
+beautifulsoup4==4.9.3
+Jinja2==2.10
+lxml==4.3.4
+munch==2.5.0
+PyYAML==5.4.1
+requests==2.18.4
+selenium==3.141.0
+tabula==1.0.5
+tabula_py==2.1.0
+xlrd==1.2.0

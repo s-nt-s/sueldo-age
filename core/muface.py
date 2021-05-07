@@ -1,15 +1,15 @@
-from .config import CFG
-from .web import Web
-from .filemanager import FM
-import tabula
-from io import StringIO
-import re
-from inspect import getmembers
-from .decorators import Cache
-
 import logging
+from inspect import getmembers
+
+import tabula
+
+from .config import CFG
+from .decorators import Cache
+from .filemanager import FM
+from .web import Web
 
 logger = logging.getLogger(__name__)
+
 
 def to_num(s, safe=False):
     if s is None:
@@ -24,21 +24,22 @@ def to_num(s, safe=False):
         s = s.replace(".", "")
         s = s.replace(",", ".")
         s = float(s)
-    if int(s)==s:
-        s=int(s)
+    if int(s) == s:
+        s = int(s)
     return s
+
 
 class Muface:
     def __init__(self):
         self.root = CFG.muface.root
         self.years = {
-            y:d for y, d in CFG.muface.items() if isinstance(y, int)
+            y: d for y, d in CFG.muface.items() if isinstance(y, int)
         }
         self.parsers = {}
         for n, f in getmembers(self):
             if n.startswith("parse_"):
                 n = n.split("_")
-                self.parsers[int(n[1])]=f
+                self.parsers[int(n[1])] = f
         if not self.parsers:
             raise Exception("No hay parseadores de muface")
         self.last_parser = max(self.parsers.keys())
@@ -46,7 +47,8 @@ class Muface:
     @Cache(file="dwn/muface/{}.json")
     def get(self, year):
         if year not in self.years:
-            raise Exception("No se ha encontrado retribuciones para el año %s, revise %s" % (year, self.root))
+            raise Exception(
+                "No se ha encontrado retribuciones para el año %s, revise %s" % (year, self.root))
         url = self.years[year]
         file = "dwn/muface/%s.html" % year
         w = Web()
@@ -55,7 +57,8 @@ class Muface:
 
         parse = getattr(self, "parse_"+str(year), None)
         if parse is None:
-            logger.critical("No existe un parseador para el año {}. Se usará el último disponible {}".format(year, self.last_parser))
+            logger.critical("No existe un parseador para el año {}. Se usará el último disponible {}".format(
+                year, self.last_parser))
             parse = self.parsers[self.last_parser]
 
         return parse(file)
@@ -70,8 +73,8 @@ class Muface:
             tds = tr.findAll("td")
             g = tds[0]
             g = g.get_text().strip().upper()
-            if len(g)<3 and g[0] in ("A", "B", "C", "E"):
+            if len(g) < 3 and g[0] in ("A", "B", "C", "E"):
                 c = tds[-1]
                 c = to_num(c.get_text())
-                data[g]=c
+                data[g] = c
         return data

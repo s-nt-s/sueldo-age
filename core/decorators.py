@@ -1,9 +1,9 @@
 import functools
-import json
 import os
-import re
 import time
+
 from .filemanager import FM
+
 
 class Cache:
     def __init__(self, file, *args, reload=False, maxOld=None, **kargs):

@@ -1,17 +1,19 @@
-from .config import CFG
-from .web import Web
-from .filemanager import FM
-import tabula
-from io import StringIO
+import logging
 import re
 from inspect import getmembers
-from .decorators import Cache
+from io import StringIO
 
-import logging
+import tabula
+
+from .config import CFG
+from .decorators import Cache
+from .filemanager import FM
+from .web import Web
 
 logger = logging.getLogger(__name__)
 
 re_cellnb = re.compile(r'\s([\d\.,]+)\s')
+
 
 def to_num(s, safe=False):
     if s is None:
@@ -26,9 +28,10 @@ def to_num(s, safe=False):
         s = s.replace(".", "")
         s = s.replace(",", ".")
         s = float(s)
-    if int(s)==s:
-        s=int(s)
+    if int(s) == s:
+        s = int(s)
     return s
+
 
 def parseTb(table):
     if table is None:
@@ -36,37 +39,38 @@ def parseTb(table):
     s = StringIO()
     sep = '\t'
     table.to_csv(s, index=False, header=False, sep=sep)
-    s=s.getvalue()
-    s=s.strip()
+    s = s.getvalue()
+    s = s.strip()
     rows = []
     for r in s.split("\n"):
         r = re_cellnb.sub(lambda m: sep+m.group()+sep, r)
         r = r.strip()
         row = []
         for c in re.split(r"\s*\t\s*", r):
-            c=to_num(c, safe=True)
+            c = to_num(c, safe=True)
             row.append(c)
         rows.append(row)
     return rows
+
 
 class Retribuciones:
     def __init__(self):
         self.root = CFG.retribuciones.root
         self.years = {
-            y:d for y, d in CFG.retribuciones.items() if isinstance(y, int)
+            y: d for y, d in CFG.retribuciones.items() if isinstance(y, int)
         }
         self.parsers = {}
         for n, f in getmembers(self):
             if n.startswith("parse_"):
                 n = n.split("_")
-                self.parsers[int(n[1])]=f
+                self.parsers[int(n[1])] = f
         if not self.parsers:
             raise Exception("No hay parseadores de retribuciones")
         self.last_parser = max(self.parsers.keys())
 
     def populate_years(self):
         self.years = {}
-        w=Web(verify=False)
+        w = Web(verify=False)
         w.get(self.root)
         for a in w.soup.select("a[href]"):
             txt = a.get_text().strip()
@@ -84,14 +88,16 @@ class Retribuciones:
         if year not in self.years:
             self.populate_years()
         if year not in self.years:
-            raise Exception("No se ha encontrado retribuciones para el año %s, revise %s" % (year, self.root))
+            raise Exception(
+                "No se ha encontrado retribuciones para el año %s, revise %s" % (year, self.root))
         url = self.years[year]
         file = "dwn/retribuciones/%s.pdf" % year
         FM.dwn(file, url, verify=False)
 
         parse = getattr(self, "parse_"+str(year), None)
         if parse is None:
-            logger.critical("No existe un parseador para el año {}. Se usará el último disponible {}".format(year, self.last_parser))
+            logger.critical("No existe un parseador para el año {}. Se usará el último disponible {}".format(
+                year, self.last_parser))
             parse = self.parsers[self.last_parser]
 
         return parse(file)
@@ -103,18 +109,18 @@ class Retribuciones:
             if 'COMPLEMENTO DE DESTINO' in t.columns:
                 tableC = t
             elif 'A2' in t.columns and 'A2' in t.columns and 'C1' in t.columns:
-                tableS= t
+                tableS = t
 
-        data={}
+        data = {}
         grupos = ("A1", "A2", "B", "C1", "C2", "E")
         for g in grupos:
-            data[g]={}
+            data[g] = {}
         for row in parseTb(tableS):
-            if not(len(row)>2 and isinstance(row[0], str) and isinstance(row[1], (int, float))):
+            if not(len(row) > 2 and isinstance(row[0], str) and isinstance(row[1], (int, float))):
                 continue
             txt = row[0].replace(" ", '')
-            sld = [r for i, r in enumerate(row[1:]) if i%2==0]
-            tri = [r for i, r in enumerate(row[1:]) if i%2==1]
+            sld = [r for i, r in enumerate(row[1:]) if i % 2 == 0]
+            tri = [r for i, r in enumerate(row[1:]) if i % 2 == 1]
             key = None
             if txt.startswith("ANUAL"):
                 key = "base"
@@ -125,19 +131,19 @@ class Retribuciones:
             if key is None:
                 continue
             for i, g in enumerate(grupos):
-                data[g][key]={
+                data[g][key] = {
                     "sueldo": sld[i],
                     "trienio": tri[i]
                 }
 
-        data["niveles"]={}
+        data["niveles"] = {}
         for row in parseTb(tableC):
             if row[0] is None or not isinstance(row[0], int):
                 continue
-            row = [r for i, r in enumerate(row) if i%2==0]
+            row = [r for i, r in enumerate(row) if i % 2 == 0]
             row = iter(row)
             nivel = next(row)
             compd = next(row)
-            data["niveles"][nivel]=compd
+            data["niveles"][nivel] = compd
 
         return data

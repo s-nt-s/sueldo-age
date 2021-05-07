@@ -1,17 +1,17 @@
+import json
 import os
 import re
-
-import bs4
-import json
-from jinja2 import Environment, FileSystemLoader
-from glob import iglob
-from os.path import relpath
 from datetime import date, datetime
 from decimal import Decimal
-import json
+from glob import iglob
+from os.path import relpath
+
+import bs4
+from jinja2 import Environment, FileSystemLoader
 
 re_date = re.compile(r'"(new Date\(.*?\))"')
 epoch = datetime.utcfromtimestamp(0)
+
 
 def my_convert(o):
     if isinstance(o, Decimal):
@@ -26,6 +26,7 @@ def my_convert(o):
         miliseg = (o - epoch).total_seconds() * 1000
         return "new Date(%s)" % miliseg
 
+
 re_br = re.compile(r"<br/>(\s*</)")
 
 
@@ -35,19 +36,22 @@ def toTag(html, *args):
     tag = bs4.BeautifulSoup(html, 'html.parser')
     return tag
 
+
 def millar(value):
     value = "{:,.0f}".format(value).replace(",", ".")
     return value
 
+
 def prc(total, part):
     p = (part / total) * 100
     dec = 0
-    while round(p, dec)==0:
+    while round(p, dec) == 0:
         dec = dec + 1
     p = round(p, dec)
     if p == int(p):
         p = int(p)
     return "<code title='{} de {}'>{}%</code>".format(millar(part), millar(total), p)
+
 
 class Jnj2():
 
@@ -63,7 +67,7 @@ class Jnj2():
         self.resources = [self.destino]
 
     def _find(self, glb, recursive=True):
-        arr=[]
+        arr = []
         for r in self.resources:
             for i in iglob(r+glb, recursive=recursive):
                 arr.append(relpath(i, self.destino))
@@ -93,11 +97,11 @@ class Jnj2():
             remo = []
             for j in self.javascript:
                 items = soup.select("script[src='"+j+"']")
-                if len(items)>1:
+                if len(items) > 1:
                     remo.extend(items)
             for c in self.css:
                 items = soup.select("link[href='"+c+"']")
-                if len(items)>1:
+                if len(items) > 1:
                     remo.extend(items)
             for r in remo:
                 if r.attrs.get("data-autoinsert"):
@@ -128,7 +132,7 @@ class Jnj2():
                     f.write("\n")
                 f.write("var "+k+" = ")
                 v = json.dumps(v, indent=indent,
-                          separators=separators, default=my_convert)
+                               separators=separators, default=my_convert)
                 v = re_date.sub(r"\1", v)
                 f.write(v+";")
 

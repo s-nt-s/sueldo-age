@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urljoin
 
 import bs4
@@ -12,7 +13,6 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
-import time
 
 re_sp = re.compile(r"\s+")
 
