@@ -43,7 +43,7 @@
 			<abbr title="Complemento">C.</abbr> específico
 			<sup><a href="#n2">2</a></sup>
 		</label>
-		<input id="especifico" required type="number" step="0.01" min="{{especifico.min}}" max="{{especifico.max}}"/> €/año
+		<input id="especifico" required type="number" step="0.01" min="{{especifico.min}}" max="{{especifico.max}}" value="{{(especifico.min + ((especifico.max-especifico.min)/2)) | int}}"/> €/año
 	</p>
 	<p>
 		<label for="productividad">
