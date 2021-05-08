@@ -114,7 +114,7 @@ def post_render(html, **kwargs):
 
 
 j = Jnj2("template/", "docs/", post=post_render)
-j.create_script("rec/js/00-data.js",
+j.create_script("rec/js/00-lib/data.js",
                 MUFACE=mfc,
                 RETRIB=rtb,
                 MODA=moda

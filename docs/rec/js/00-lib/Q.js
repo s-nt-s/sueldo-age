@@ -1,19 +1,3 @@
-Array.prototype.sortMix = function () {
-  var nb=[];
-  var st=[];
-  var ot=[];
-  var i, c, t;
-  for (i=0;i<this.length;i++) {
-    c = this[i];
-    t = (typeof c);
-    if (t == "string") st.push(c);
-    else if (t == "number") nb.push(c);
-    else ot.push(c);
-  }
-  return st.sort().concat(nb.sort(function(a, b) {
-    return a-b;
-  })).concat(ot.sort());
-}
 function toQuery(obj) {
   var str = [];
   for(var p in obj)
