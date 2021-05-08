@@ -152,6 +152,8 @@ function do_salary(silent) {
     $("#resultado").find("p.error").show();
     $("#resultado").find("div.msg").hide();
   }
+  Q=new MKQ($("form:visible").serialize(), 0);
+  $("#sueldo:visible a").attr("href", "?"+Q.toString()+"#sueldo");
 }
 
 $(document).ready(function(){
@@ -166,6 +168,11 @@ $(document).ready(function(){
     var l=$(this).closest("form").find("input[name=nivel]");
     if (l.val().length==0) l.val(md["nivel"]);
   });
+  $("form :input[name]").each(function(){
+    var n=this.name;
+    var v=Q.get(n);
+    if (v!=null) this.value=v;
+  })
   $("form :input")
     .change(do_salary);
   do_salary(true);

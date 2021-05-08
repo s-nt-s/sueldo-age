@@ -4,6 +4,7 @@ import logging
 from math import ceil
 from os import chdir
 from os.path import abspath, dirname
+import re
 
 import bs4
 
@@ -103,11 +104,11 @@ def post_render(html, **kwargs):
         href = a.attrs.get("href")
         if href is None:
             continue
-        if href.startswith("#"):
+        if re.match(r"^#n\d+$", href):
             id = href[1:]
             nt = soup.find(None, id=id)
             a.attrs["title"] = nt.get_text().strip()
-        else:
+        if not href.startswith("#"):
             a.attrs["target"] = "_blank"
     return str(soup)
 
