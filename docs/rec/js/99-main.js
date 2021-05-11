@@ -104,6 +104,8 @@ function _do_salary(silent) {
 
   $("#neto_anual").html(do_round((neto_mes*12)+(neto_extra*2)));
 
+  var deducciones = (bruto_anual*d.ss) + (d.muface*14);
+
   return true;
 }
 
@@ -127,7 +129,7 @@ $(document).ready(function(){
     return this.value;
   }).get();
   chg("grupo", function(){
-    var md = MODA[this.value]
+    var md = MODA[this.value];
     if (md==null || md["nivel"]==null) return;
     var l=$(this).closest("form").find("input[name=nivel]");
     if (l.val().length==0) l.val(md["nivel"]);

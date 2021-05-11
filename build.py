@@ -115,18 +115,18 @@ def post_render(html, **kwargs):
 
 j = Jnj2("template/", "docs/", post=post_render)
 j.create_script("rec/js/00-lib/data.js",
-                MUFACE=mfc,
-                RETRIB=rtb,
-                MODA=moda
-                )
+    MUFACE=mfc,
+    RETRIB=rtb,
+    MODA=moda
+)
 j.save("index.html",
-       rpt=minmax(rpt.keys()),
-       nivel=minmax(NIVELES),
-       sueldo=minmax(sueldo),
-       extra=minmax(extra),
-       muface=minmax(mfc.values()),
-       cdestino=minmax(rtb["niveles"].values()),
-       especifico=minmax(p["complemento"] for p in rpt.values()),
-       grupos=GRUPOS,
-       cfg=CFG
-       )
+    rpt=minmax(rpt.keys()),
+    nivel=minmax(NIVELES),
+    sueldo=minmax(sueldo),
+    extra=minmax(extra),
+    muface=minmax(mfc.values()),
+    cdestino=minmax(rtb["niveles"].values()),
+    especifico=minmax(p["complemento"] for p in rpt.values()),
+    grupos=GRUPOS,
+    cfg=CFG
+)

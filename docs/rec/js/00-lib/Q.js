@@ -15,6 +15,11 @@ class MKQ {
       window.location.search.substr(1) ||
       window.location.hash.substr(1);
     this.Q = MKQ.parse(this.qr, skipVal);
+    this.numbers=new Set($("*[name][type=number]").filter(function(){
+      return $("*[name='"+this.name+"'][type!=number]").length==0
+    }).map(function(){
+      return this.name
+    }).get());
   }
   static parse(qr, skipVal) {
     if (qr==null || qr.length==0) return null;
@@ -27,6 +32,10 @@ class MKQ {
         if (pair.length==1 || v.length==0) {
           _Q[k]=true;
           return;
+        }
+        if (this.numbers.has(k)) {
+          var _v = parseFloat(v);
+          if (!Number.isNaN(_v)) v=_v;
         }
         if (skipVal!=null) {
           if (Array.isArray(skipVal) && skipVal.indexOf(v)>=0) return;
