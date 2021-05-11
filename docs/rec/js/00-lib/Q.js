@@ -16,9 +16,9 @@ class MKQ {
       window.location.hash.substr(1);
     this.Q = MKQ.parse(this.qr, skipVal);
     this.numbers=new Set($("*[name][type=number]").filter(function(){
-      return $("*[name='"+this.name+"'][type!=number]").length==0
+      return $("*[name='"+this.name+"'][type!=number]").length==0;
     }).map(function(){
-      return this.name
+      return this.name;
     }).get());
   }
   static parse(qr, skipVal) {
@@ -34,7 +34,7 @@ class MKQ {
           return;
         }
         if (this.numbers.has(k)) {
-          var _v = parseFloat(v);
+          var _v = parseFloat(v, 10);
           if (!Number.isNaN(_v)) v=_v;
         }
         if (skipVal!=null) {
