@@ -23,7 +23,8 @@ class MKQ {
     qr.split("&").forEach((item, i) => {
         var pair = item.split('=');
         k = decodeURIComponent(pair[0]);
-        v = decodeURIComponent(pair[1] || '').replace(/\++/g, " ").trim();
+        v = decodeURIComponent(pair[1] || '');
+        v = v.replace(/\++/g, " ").trim();
         if (pair.length==1 || v.length==0) {
           _Q[k]=true;
           return;
@@ -67,13 +68,13 @@ class MKQ {
   }
   get(k, spl) {
     if (this.Q==null) return null;
-    var v = this.Q[k];
-    if (typeof v == "string") {
-      if (v==null || v.trim().length==0) return null;
-      if (spl!=null && v!=null) {
-        v = v.split(spl).filter(function(s){return s.length})
-        if (v.length==0) return null;
-      }
+    var v=this.Q[k];
+    if (spl!=null && v!=null) {
+      v = (""+v).split(spl).map(function(s){
+        return s.trim();
+      }).filter(function(s){
+        return s.length;
+      })
     }
     return v;
   }
