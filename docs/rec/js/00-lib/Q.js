@@ -14,14 +14,9 @@ class MKQ {
     this.qr = qr ||
       window.location.search.substr(1) ||
       window.location.hash.substr(1);
-    this.numbers=[...(new Set($("*[name][type=number]").map(function(){
-      return this.name;
-    }).get()))].filter(function(name){
-      return $("*[name='"+name+"'][type!=number]").length==0;
-    });;
-    this.Q = MKQ.parse(this.qr, skipVal, this.numbers);
+    this.Q = MKQ.parse(this.qr, skipVal);
   }
-  static parse(qr, skipVal, numbers) {
+  static parse(qr, skipVal) {
     if (qr==null || qr.length==0) return null;
     var _Q={};
     var k, v;
@@ -33,10 +28,8 @@ class MKQ {
           _Q[k]=true;
           return;
         }
-        if (numbers!=null && numbers.indexOf(k)>=0) {
-          var _v = parseFloat(v, 10);
-          if (!Number.isNaN(_v)) v=_v;
-        }
+        var _v = parseFloat(v, 10);
+        if (!Number.isNaN(_v)) v=_v;
         if (skipVal!=null) {
           if (Array.isArray(skipVal) && skipVal.indexOf(v)>=0) return;
           if (skipVal==v) return;
