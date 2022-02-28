@@ -73,6 +73,7 @@ class Muface:
             tds = tr.findAll("td")
             g = tds[0]
             g = g.get_text().strip().upper()
+            g = g.split()[0]
             if len(g) < 3 and g[0] in ("A", "B", "C", "E"):
                 c = tds[-1]
                 c = to_num(c.get_text())
