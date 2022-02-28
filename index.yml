@@ -1,9 +1,9 @@
 retribuciones:
   root: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Paginas/RetribucionesPersonalFuncionario.aspx
-  2021: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%C3%91O%202021/Retribuciones%20personal%20funcionario%202021.pdf
+  2022: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%C3%91O%202022/personal%20funcionario%202022.pdf
 muface:
   root: https://www.muface.es/muface_Home/mutualistas/cotizacion.html
-  2021: https://www.muface.es/muface_Home/mutualistas/cotizacion/Regimen-de-Cotizaciones.html
+  2022: https://www.muface.es/muface_Home/mutualistas/cotizacion/Regimen-de-Cotizaciones.html
 rpt:
   root: https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html
 funciona:
