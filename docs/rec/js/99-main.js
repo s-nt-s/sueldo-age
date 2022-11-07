@@ -88,7 +88,7 @@ function _do_salary(silent) {
   var bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + d.trienios.base + (d.trienios.extra*2);
   $("#bruto_anual").html(do_round(bruto_anual));
 
-  var bruto_mes = d.base + d.destino + (((d.destino + d.especifico)/14)*12) + d.trienios.base;
+  var bruto_mes = d.base + (((d.destino + d.especifico)/14)*12) + d.trienios.base;
   $("#bruto_mes").html(do_round(bruto_mes/12));
 
   var bruto_extra = d.extra*2 + d.trienios.extra + (((d.destino + d.especifico)/14)*2);
