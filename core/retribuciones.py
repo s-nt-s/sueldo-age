@@ -149,7 +149,7 @@ class Retribuciones:
 
         return data
 
-    def parse_2022(self, file):
+    def _parse_2022(self, file):
         tableC = None
         tableS = None
         for t in tabula.read_pdf(file, pages=1, multiple_tables=True):
@@ -198,6 +198,54 @@ class Retribuciones:
             row = iter(row)
             nivel = next(row)
             compd = next(row)
+            data["niveles"][nivel] = compd
+
+        return data
+
+    def parse_2022(self, file):
+        data = {}
+        grupos = ("A1", "A2", "B", "C1", "C2", "E")
+        for g in grupos:
+            data[g] = {}
+        data["niveles"] = {}
+        lines = {}
+        page = FM.load_pdf(file, as_list=True)[0]
+        for line in page.split("\n"):
+            line = line.strip()
+            spl = line.split("     ", 1)
+            if len(spl)!=2:
+                continue
+            cod = spl[0].strip()
+            cod = re.sub(r"( ([A-Z])\b)+", lambda x: x.group().replace(" ",""), cod)
+            val = re.findall(r"\d[\d\.,]+", spl[1].strip())
+            val = tuple(map(lambda x: float(x.replace(".", "").replace(",", ".")), val))
+            if len(val) < 2:
+                continue
+            lines[cod] = val
+
+        for txt, cells in lines.items():
+            key = None
+            if txt.startswith("ANUAL"):
+                key = "base"
+            elif txt.startswith("PAGA EXTRA JUNIO"):
+                key = "junio"
+            elif txt.startswith("PAGA EXTRA DICIEMBRE"):
+                key = "diciembre"
+            if key is None:
+                continue
+            sld = [r for i, r in enumerate(cells) if i % 2 == 0]
+            tri = [r for i, r in enumerate(cells) if i % 2 == 1]
+            for i, g in enumerate(grupos):
+                data[g][key] = {
+                    "sueldo": sld[i],
+                    "trienio": tri[i]
+                }
+
+        for txt, cells in lines.items():
+            if not txt.isdigit():
+                continue
+            nivel = int(txt)
+            compd = cells[1]
             data["niveles"][nivel] = compd
 
         return data

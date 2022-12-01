@@ -3,6 +3,7 @@ import logging
 from os import makedirs
 from os.path import dirname, realpath
 from pathlib import Path
+import pdftotext
 
 import requests
 import yaml
@@ -156,6 +157,13 @@ class FileManager:
                 txt = txt.format(*args, **kargv)
             return txt
 
+    def load_pdf(self, file, *args, as_list=False, **kvargs):
+        with open(file, 'rb') as fl:
+            pdf = pdftotext.PDF(fl)
+            if as_list:
+                return list(pdf)
+            return "\n".join(pdf)
+            
     def dump_txt(self, file, txt, *args, **kargv):
         if args or kargv:
             txt = txt.format(*args, **kargv)
