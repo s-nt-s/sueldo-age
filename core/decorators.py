@@ -41,7 +41,8 @@ class Cache:
             data = self.read(fl, *args, **kargs)
             return data
         data = self.func(slf, *args, **kargs)
-        self.save(fl, data, *args, **kargs)
+        if data is not None:
+            self.save(fl, data, *args, **kargs)
         return data
 
     def isReload(self, slf, *args, **kargs):
@@ -63,15 +64,3 @@ class Cache:
         self.func = func
         return lambda *args, **kargs: self.callCache(*args, **kargs)
 
-
-class JsonCache(Cache):
-    def __init__(self, *args, **kargv):
-        super().__init__(*args, **kargv)
-
-    def read(self, file, *args, **kargs):
-        return read_js(file)
-
-    def save(self, file, data, *args, **kargs):
-        if isinstance(data, set):
-            data = list(sorted(data))
-        save_js(file, data)

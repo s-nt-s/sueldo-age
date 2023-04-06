@@ -7,6 +7,8 @@ from .config import CFG
 from .decorators import Cache
 from .filemanager import FM
 from .web import Web
+import re
+from os.path import isfile
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +53,10 @@ class Muface:
                 "No se ha encontrado retribuciones para el año %s, revise %s" % (year, self.root))
         url = self.years[year]
         file = "dwn/muface/%s.html" % year
-        w = Web()
-        w.get(url)
-        FM.dump(file, w.soup)
+        if not isfile(file):
+            w = Web()
+            w.get(url)
+            FM.dump(file, w.soup)
 
         parse = getattr(self, "parse_"+str(year), None)
         if parse is None:
@@ -67,6 +70,28 @@ class Muface:
         data = {}
         soup = FM.load(file)
         li = soup.find("li", text="Mutualistas obligatorios (cuota mensual):")
+        ul = li.find_parent("ul")
+        table = ul.find_next_sibling("table")
+        for tr in table.select("tbody tr"):
+            tds = tr.findAll("td")
+            g = tds[0]
+            g = g.get_text().strip().upper()
+            g = g.split()[0]
+            if len(g) < 3 and g[0] in ("A", "B", "C", "E"):
+                c = tds[-1]
+                c = to_num(c.get_text())
+                data[g] = c
+        return data
+    
+
+    def parse_2023(self, file):
+        data = {}
+        soup = FM.load(file)
+        def findMutualistas(soup):
+            for s in soup.findAll("strong"):
+                if "Mutualistas obligatorios (cuota mensual):" in str(s):
+                    return s.find_parent("li")
+        li = findMutualistas(soup)
         ul = li.find_parent("ul")
         table = ul.find_next_sibling("table")
         for tr in table.select("tbody tr"):

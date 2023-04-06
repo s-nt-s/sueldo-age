@@ -159,7 +159,7 @@ class FileManager:
 
     def load_pdf(self, file, *args, as_list=False, **kvargs):
         with open(file, 'rb') as fl:
-            pdf = pdftotext.PDF(fl)
+            pdf = pdftotext.PDF(fl, **kvargs)
             if as_list:
                 return list(pdf)
             return "\n".join(pdf)

@@ -101,7 +101,13 @@ class Retribuciones:
                 year, self.last_parser))
             parse = self.parsers[self.last_parser]
 
-        return parse(file)
+        data = parse(file)
+        if isinstance(data, dict):
+            if len(data.keys()) == 0:
+                return None
+            if 0 == max(map(len, data.values())):
+                return None
+        return data
 
     def parse_2021(self, file):
         tableC = None
@@ -209,7 +215,7 @@ class Retribuciones:
             data[g] = {}
         data["niveles"] = {}
         lines = {}
-        page = FM.load_pdf(file, as_list=True)[0]
+        page = FM.load_pdf(file, as_list=True, physical=True)[0]
         for line in page.split("\n"):
             line = line.strip()
             spl = line.split("     ", 1)
