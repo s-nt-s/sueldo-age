@@ -33,7 +33,7 @@ def to_num(s, safe=False):
     return s
 
 
-def parse(cell, parse_number=True):
+def parse_cell(cell, parse_number=True):
     if not cell:
         return None
     v = cell.value
@@ -41,6 +41,8 @@ def parse(cell, parse_number=True):
         return int(v) if v.is_integer() else v
     if isinstance(v, str):
         v = v.strip()
+        if v.isdigit():
+            return int(v)
         v = re_space.sub(" ", v)
         v = v.replace("PROGRAMDOR", "PROGRAMADOR")
         if parse_number and re_number.match(v):
@@ -96,7 +98,7 @@ class RPT:
             wb = open_workbook(file)
             sh = wb.sheet_by_index(0)
             for rx in range(sh.nrows):
-                row = [parse(c) for c in sh.row(rx)]
+                row = [parse_cell(c) for c in sh.row(rx)]
                 if len(row) < 2:
                     continue
                 if not isinstance(row[0], int):
