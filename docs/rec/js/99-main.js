@@ -14,7 +14,10 @@ function do_round(v) {
   let dc = sp.length==2?sp[1].length:0;
   let en = sp[0].length;
   v = sp[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  if (sp.length>1) v = v+","+sp[1];
+  if (sp.length>1) {
+    v = v+","+sp[1];
+    if (sp[1].length==1) v = v+"0";
+  }
   //v = `<code><span class="nm en${en} dc${dc}">${v}</span></code>`
   v = `<code title="${v}"><span class="nm">${rnd}</span></code>`
   return v;
@@ -48,6 +51,7 @@ function _do_salary(silent) {
   let d=f.serializeDict();
   d.irpf = safe_div(d.irpf, 100);
   d.ss = safe_div(d.ss, 100);
+  d.mei= safe_div(d.mei, 100);
 
   d.muface = MUFACE[d.grupo];
   if (d.muface==null) return false;
@@ -90,20 +94,18 @@ function _do_salary(silent) {
   let bruto_mes = d.base + (((d.destino + d.especifico)/14)*12) + d.trienios.base;
   $("#bruto_mes").html(do_round(bruto_mes/12));
 
-  let bruto_extra = d.extra*2 + d.trienios.extra + (((d.destino + d.especifico)/14)*2);
+  let bruto_extra = (d.extra + d.trienios.extra + ((d.destino + d.especifico)/14))*2;
   $("#bruto_extra").html(do_round(bruto_extra/2));
 
   let neto_mes = (d.base + d.trienios.base + d.productividad)/12 + (d.destino + d.especifico)/14;
-  neto_mes = neto_mes * (1-d.irpf-d.ss) - d.muface;
-  neto_mes = neto_mes - ((bruto_extra/12)*d.ss);
+  neto_mes = neto_mes * (1-d.irpf-d.ss-d.mei) - d.muface;
+  neto_mes = neto_mes - ((bruto_extra/12)*(d.ss+d.mei));
   $("#neto_mes").html(do_round(neto_mes));
 
   let neto_extra = ((bruto_extra/2) * (1-d.irpf)) - d.muface;
   $("#neto_extra").html(do_round(neto_extra));
 
   $("#neto_anual").html(do_round((neto_mes*12)+(neto_extra*2)));
-
-  let deducciones = (bruto_anual*d.ss) + (d.muface*14);
 
   return true;
 }
