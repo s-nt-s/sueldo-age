@@ -1,4 +1,4 @@
-var MUFACE = {
+const MUFACE = {
  "A1": 51.68,
  "A2": 40.68,
  "B": 35.62,
@@ -6,7 +6,7 @@ var MUFACE = {
  "C2": 24.72,
  "E": 21.07
 };
-var RETRIB = {
+const RETRIB = {
  "A1": {
   "base": {
    "sueldo": 15459.72,
@@ -124,7 +124,7 @@ var RETRIB = {
   "1": 1492.68
  }
 };
-var MODA = {
+const MODA = {
  "A1": {
   "nivel": 28,
   "30": 28265.44,

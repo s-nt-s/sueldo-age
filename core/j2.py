@@ -130,7 +130,7 @@ class Jnj2():
             for i, (k, v) in enumerate(kargv.items()):
                 if i > 0:
                     f.write("\n")
-                f.write("var "+k+" = ")
+                f.write("const "+k+" = ")
                 v = json.dumps(v, indent=indent,
                                separators=separators, default=my_convert)
                 v = re_date.sub(r"\1", v)

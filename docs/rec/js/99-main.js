@@ -10,9 +10,9 @@ function do_round(v) {
   rnd = rnd.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   v = Math.round(v*100)/100;
   v = v.toString();
-  let sp = v.split(/\./);
-  let dc = sp.length==2?sp[1].length:0;
-  let en = sp[0].length;
+  const sp = v.split(/\./);
+  //let dc = sp.length==2?sp[1].length:0;
+  //let en = sp[0].length;
   v = sp[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   if (sp.length>1) {
     v = v+","+sp[1];
@@ -24,46 +24,46 @@ function do_round(v) {
 }
 
 function safe_div(n, x) {
-  let aux = Math.pow(10, n.toString().length);
+  const aux = Math.pow(10, n.toString().length);
   n = (n*aux)/(x*aux);
   return n;
 }
 function safe_sum() {
   if (arguments.length==0) return 0;
   if (arguments.length==1) return arguments[0];
-  let arr = Array.from(arguments);
+  const arr = Array.from(arguments);
   let aux = arr.map(function(i){return i.toString().length})
   aux = Math.max(...aux);
   aux = Math.pow(10, aux);
-  let sum = arr.reduce(function(t, c) {return t+(c*aux)}, 0);
+  const sum = arr.reduce(function(t, c) {return t+(c*aux)}, 0);
   return sum/aux;
 }
 
-function _do_salary(silent) {
-  let f=$("form:visible");
+function parseForm(silent) {
+  const f=$("form:visible");
   if (!f[0].checkValidity()) {
     if(silent !== true) {
       f[0].reportValidity();
     }
-    return false;
+    return null;
   }
 
-  let d=f.serializeDict();
+  const d=f.serializeDict();
   d.irpf = safe_div(d.irpf, 100);
   d.ss = safe_div(d.ss, 100);
   d.mei= safe_div(d.mei, 100);
 
   d.muface = MUFACE[d.grupo];
-  if (d.muface==null) return false;
+  if (d.muface==null) return null;
 
-  let r=RETRIB[d.grupo];
-  if (r==null) return false;
+  const r=RETRIB[d.grupo];
+  if (r==null) return null;
 
   d.base = r.base.sueldo;
   d.extra = r.diciembre.sueldo;
 
-  let n = RETRIB.niveles[d.nivel];
-  if (n==null) return false;
+  const n = RETRIB.niveles[d.nivel];
+  if (n==null) return null;
 
   d.destino = n;
 
@@ -73,9 +73,9 @@ function _do_salary(silent) {
   }
 
   GRUPOS.forEach((g, i) => {
-    let tri = d["tri"+g];
+    const tri = d["tri"+g];
     if (Number.isNaN(tri)) return;
-    let r=RETRIB[g];
+    const r=RETRIB[g];
     if (r==null) return;
     delete d["tri"+g];
     if (tri==0) return;
@@ -86,26 +86,41 @@ function _do_salary(silent) {
   d.trienios.base = safe_sum.apply(this, d.trienios.base);
   d.trienios.extra = safe_sum.apply(this, d.trienios.extra);
 
-  console.log(d);
+  console.log("D", d);
 
-  let bruto_anual = d.base + (d.extra*2) + d.destino + d.especifico + d.productividad + d.trienios.base + (d.trienios.extra*2);
-  $("#bruto_anual").html(do_round(bruto_anual));
+  return d;
+}
 
-  let bruto_mes = d.base + (((d.destino + d.especifico)/14)*12) + d.trienios.base;
-  $("#bruto_mes").html(do_round(bruto_mes/12));
+function _do_salary(silent) {
+  const d = parseForm(silent);
+  if (d == null) return false;
 
-  let bruto_extra = (d.extra + d.trienios.extra + ((d.destino + d.especifico)/14))*2;
-  $("#bruto_extra").html(do_round(bruto_extra/2));
+  const n = new Nomina({
+      base: new Ingreso({anual: d.base+d.trienios.base, pagas: 12}),
+      extra: new Ingreso({mensual: d.extra+d.trienios.extra, pagas: 2}),
+      destino: new Ingreso({anual: d.destino, pagas: 14}),
+      especifico: new Ingreso({anual: d.especifico, pagas: 14}),
+      productividad: new Ingreso({anual: d.productividad, pagas: 12}),
+      muface: d.muface,
+      irpf: d.irpf,
+      ss: d.ss,
+      mei: d.mei
+  });
 
-  let neto_mes = (d.base + d.trienios.base + d.productividad)/12 + (d.destino + d.especifico)/14;
-  neto_mes = neto_mes * (1-d.irpf-d.ss-d.mei) - d.muface;
-  neto_mes = neto_mes - ((bruto_extra/12)*(d.ss+d.mei));
-  $("#neto_mes").html(do_round(neto_mes));
+  const jqval = {
+    "bruto_anual": n.bruto.anual,
+    "neto_anual":  n.neto.anual,
+    "bruto_mes":   n.bruto.normal.mensual,
+    "neto_mes":    n.neto.normal.mensual,
+    "bruto_extra": n.bruto.normal.mensual+n.bruto.extra.mensual,
+    "neto_extra":  n.neto.normal.mensual+n.neto.extra.mensual,
+    "bruto_media": n.bruto.anual/12,
+    "neto_media":  n.neto.anual/12
+  };
 
-  let neto_extra = ((bruto_extra/2) * (1-d.irpf)) - d.muface;
-  $("#neto_extra").html(do_round(neto_extra));
-
-  $("#neto_anual").html(do_round((neto_mes*12)+(neto_extra*2)));
+  for (const [jq, val] of Object.entries(jqval)) {
+    $("#"+jq).html(do_round(val));
+  }
 
   return true;
 }
@@ -130,14 +145,14 @@ $(document).ready(function(){
     return this.value;
   }).get();
   chg("grupo", function(){
-    let md = MODA[this.value];
+    const md = MODA[this.value];
     if (md==null || md["nivel"]==null) return;
-    let l=$(this).closest("form").find("input[name=nivel]");
+    const l=$(this).closest("form").find("input[name=nivel]");
     if (l.val().length==0) l.val(md["nivel"]);
   });
   $("form :input[name]").each(function(){
-    let n=this.name;
-    let v=Q.get(n);
+    const n=this.name;
+    const v=Q.get(n);
     if (v!=null) this.value=v;
   })
   $("form :input")

@@ -18,10 +18,10 @@ class MKQ {
   }
   static parse(qr, skipVal) {
     if (qr==null || qr.length==0) return null;
-    var _Q={};
-    var k, v;
+    const _Q={};
+    let k, v, pair;
     qr.split("&").forEach((item, i) => {
-        var pair = item.split('=');
+        pair = item.split('=');
         k = decodeURIComponent(pair[0]);
         v = decodeURIComponent(pair[1] || '');
         v = v.replace(/\++/g, " ").trim();
@@ -37,14 +37,14 @@ class MKQ {
         }
         _Q[k] = v;
     });
-    console.log(_Q);
+    console.log("Q", _Q);
     return _Q;
   }
   static toString(_Q) {
     if (_Q==null || Object.keys(_Q).length==0) return null;
-    var new_qr=[];
-    var N_QA={};
-    var N_QB={};
+    let new_qr=[];
+    const N_QA={};
+    const N_QB={};
     for (const [k, v] of Object.entries(_Q)) {
       if (Array.isArray(v)) N_QA[k]=v.join(" ");
       else N_QB[k]=v;
@@ -60,7 +60,7 @@ class MKQ {
     return MKQ.toString(this.Q);
   }
   redirect() {
-    var new_qr = this.toString();
+    const new_qr = this.toString();
     if (new_qr==null || this.qr==new_qr) return false;
     window.location.search="?"+new_qr;
     console.log("REDIRECT:\n   "+this.qr+" -->\n   "+new_qr);
@@ -68,7 +68,7 @@ class MKQ {
   }
   get(k, spl) {
     if (this.Q==null) return null;
-    var v=this.Q[k];
+    let v=this.Q[k];
     if (spl!=null && v!=null) {
       v = (""+v).split(spl).map(function(s){
         return s.trim();
