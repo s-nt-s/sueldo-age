@@ -20,17 +20,15 @@ class Ingreso {
 class Paga {
     #normal = new Ingreso();
     #extra  = new Ingreso();
-    #anual  = -1;
 
     constructor({normal = new Ingreso(), extra = new Ingreso()}) {
         this.#normal = normal;
         this.#extra = extra;
-        this.#anual = normal.anual + extra.anual;
     }
 
     get normal() {return this.#normal;}
     get extra()  {return this.#extra;}
-    get anual()  {return this.#anual;}
+    get anual()  {return this.#normal.anual + this.#extra.anual;}
 }
 
 class Nomina {

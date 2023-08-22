@@ -1,7 +1,51 @@
-var GRUPOS=null;
+F=null;
 
-function chg(id, fnc) {
-  $("*[name="+id+"]").change(fnc).change();
+class Form {
+  
+  constructor() {
+    this.form = document.forms[0];
+    this.error = document.querySelector("#resultado p.error");
+    this.msg = document.querySelector("#resultado div.msg");
+    this.link = document.querySelector("#sueldo a");
+    this.grupo = this.form.elements['grupo'];
+    this.nivel = this.form.elements['nivel'];
+    this.grupos = Array.from(this.grupo.options).filter(e => e.value.length).map(e=>e.value);
+  }
+
+  get inputs() {
+      return Array.from(this.form.elements).filter(e=>{
+          return (e.name != null && e.name.length>0 || ["SELECT", "INPUT",  "TEXTAREA"].includes(e.tagName));
+      });
+  }
+
+  getData() {
+    const obj = {}
+    Array.from(new FormData(this.form)).forEach(([k, v])=> {
+        const _v = parseFloat(v);
+        if (!Number.isNaN(_v)) v=_v;
+        if (obj[k]==null) obj[k]=v;
+        else if (Array.isArray(obj[k])) obj[k].push(v);
+        else obj[k]=[obj[k], v];
+    })
+    return obj;
+  }
+
+  getQuery() {
+      return new URLSearchParams(Array.from(new FormData(this.form))).toString();
+  }
+
+  checkValidity(silent) {
+    if (!this.form.checkValidity()) {
+      if(silent !== true) this.form.reportValidity();
+      return false;
+    }
+    return true;
+  }
+}
+
+function addEventListenerAndFire(node, event, fnc) {
+  node.addEventListener(event, fnc);
+  fnc.apply(node);
 }
 
 function do_round(v) {
@@ -40,15 +84,9 @@ function safe_sum() {
 }
 
 function parseForm(silent) {
-  const f=$("form:visible");
-  if (!f[0].checkValidity()) {
-    if(silent !== true) {
-      f[0].reportValidity();
-    }
-    return null;
-  }
+  if (!F.checkValidity(silent)) return null;
 
-  const d=f.serializeDict();
+  const d = F.getData();
   d.irpf = safe_div(d.irpf, 100);
   d.ss = safe_div(d.ss, 100);
   d.mei= safe_div(d.mei, 100);
@@ -72,7 +110,7 @@ function parseForm(silent) {
     extra:[]
   }
 
-  GRUPOS.forEach((g, i) => {
+  F.grupos.forEach((g, i) => {
     const tri = d["tri"+g];
     if (Number.isNaN(tri)) return;
     const r=RETRIB[g];
@@ -107,7 +145,7 @@ function _do_salary(silent) {
       mei: d.mei
   });
 
-  const jqval = {
+  const idval = {
     "bruto_anual": n.bruto.anual,
     "neto_anual":  n.neto.anual,
     "bruto_mes":   n.bruto.normal.mensual,
@@ -118,44 +156,36 @@ function _do_salary(silent) {
     "neto_media":  n.neto.anual/12
   };
 
-  for (const [jq, val] of Object.entries(jqval)) {
-    $("#"+jq).html(do_round(val));
-  }
+  Object.entries(idval).forEach(([id, val])=>{
+    document.getElementById(id).innerHTML = do_round(val);
+  })
 
   return true;
 }
 
-
 function do_salary(silent) {
   if(_do_salary(silent)) {
-    $("#resultado").find("p.error").hide();
-    $("#resultado").find("div.msg").show();
+    F.error.style.display = 'none';
+    F.msg.style.display = '';
   } else {
-    $("#resultado").find("p.error").show();
-    $("#resultado").find("div.msg").hide();
+    F.error.style.display = '';
+    F.msg.style.display = 'none';
   }
-  Q=new MKQ($("form:visible").serialize(), 0);
-  $("#sueldo:visible a").attr("href", "?"+Q.toString()+"#sueldo");
+  Q=new MKQ(F.getQuery(), 0);
+  F.link.href = "?"+Q.toString()+"#sueldo";
 }
 
-$(document).ready(function(){
-  GRUPOS=$("*[name=grupo]:eq(0) option[value!='']").filter(function(){
-    return this.value;
-  }).map(function(){
-    return this.value;
-  }).get();
-  chg("grupo", function(){
+document.addEventListener('DOMContentLoaded', function(){
+  F = new Form();
+  addEventListenerAndFire(F.grupo, "change", function(){
     const md = MODA[this.value];
     if (md==null || md["nivel"]==null) return;
-    const l=$(this).closest("form").find("input[name=nivel]");
-    if (l.val().length==0) l.val(md["nivel"]);
+    if (F.nivel.value.length==0) F.nivel.value = md["nivel"];
   });
-  $("form :input[name]").each(function(){
-    const n=this.name;
-    const v=Q.get(n);
-    if (v!=null) this.value=v;
+  F.inputs.forEach(e=>{
+    const v=Q.get(e.name);
+    if (v!=null) e.value=v;
+    e.addEventListener("change", do_salary);
   })
-  $("form :input")
-    .change(do_salary);
   do_salary(true);
-})
+});
