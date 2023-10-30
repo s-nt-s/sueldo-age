@@ -20,7 +20,7 @@ chdir(dname)
 
 logging.basicConfig(
     level=logging.INFO,
-    #format='%(asctime)s - %(levelname)s - %(message)s',
+    # format='%(asctime)s - %(levelname)s - %(message)s',
     format='%(name)s %(levelname)s %(message)s',
     datefmt='%d-%b-%y %H:%M:%S'
 )
@@ -107,7 +107,9 @@ def post_render(html, **kwargs):
         if re.match(r"^#n\d+$", href):
             id = href[1:]
             nt = soup.find(None, id=id)
-            a.attrs["title"] = nt.get_text().strip()
+            txt = nt.get_text().strip()
+            txt = re.sub(r"\s+\(\+\)\s*", "", txt)
+            a.attrs["title"] = txt
         if not href.startswith("#"):
             a.attrs["target"] = "_blank"
     return str(soup)
@@ -115,18 +117,18 @@ def post_render(html, **kwargs):
 
 j = Jnj2("template/", "docs/", post=post_render)
 j.create_script("rec/js/00-lib/data.js",
-    MUFACE=mfc,
-    RETRIB=rtb,
-    MODA=moda
-)
+                MUFACE=mfc,
+                RETRIB=rtb,
+                MODA=moda
+                )
 j.save("index.html",
-    rpt=minmax(rpt.keys()),
-    nivel=minmax(NIVELES),
-    sueldo=minmax(sueldo),
-    extra=minmax(extra),
-    muface=minmax(mfc.values()),
-    cdestino=minmax(rtb["niveles"].values()),
-    especifico=minmax(p["complemento"] for p in rpt.values()),
-    grupos=GRUPOS,
-    cfg=CFG
-)
+       rpt=minmax(rpt.keys()),
+       nivel=minmax(NIVELES),
+       sueldo=minmax(sueldo),
+       extra=minmax(extra),
+       muface=minmax(mfc.values()),
+       cdestino=minmax(rtb["niveles"].values()),
+       especifico=minmax(p["complemento"] for p in rpt.values()),
+       grupos=GRUPOS,
+       cfg=CFG
+       )

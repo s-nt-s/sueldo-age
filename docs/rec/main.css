@@ -100,3 +100,8 @@ th img {
 a.info {
 	text-decoration: none;
 }
+
+ol {
+	padding-left: 1.5em;
+	margin-left: 0;
+}
