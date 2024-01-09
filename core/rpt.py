@@ -1,13 +1,14 @@
 import logging
 import re
 
-import tabula
 from xlrd import open_workbook
 
 from .config import CFG
 from .decorators import Cache
 from .filemanager import FM
 from .web import Web
+import functools
+from typing import NamedTuple, List
 
 logger = logging.getLogger(__name__)
 
@@ -52,12 +53,31 @@ def parse_cell(cell, parse_number=True):
     return v
 
 
+class Row(NamedTuple):
+    puesto: int
+    grupo: str
+    nivel: int
+    complemento: float
+    ministerio: int
+    direccion: int
+    unidad: int
+
+
+class Complemento(NamedTuple):
+    complemento: float
+    grupo: str
+    nivel: int
+    ministerio: int
+    direccion: int
+    unidad: int
+
+
 class RPT:
     def __init__(self):
         self.root = CFG.rpt.root
 
-    @Cache(file="dwn/rpt/puestos.json", maxOld=1)
-    def get(self):
+    @functools.cache
+    def __get_rows(self):
         w = Web()
         w.get(self.root)
         done = set()
@@ -92,7 +112,7 @@ class RPT:
                     return data[k]
             raise Exception(file+" no tiene ningún campo: " + ", ".join(args))
 
-        data = {}
+        rows: List[Row] = []
         for file in sorted(files):
             head = None
             wb = open_workbook(file)
@@ -105,11 +125,42 @@ class RPT:
                     head = row
                 else:
                     row = {k: v for k, v in zip(head, row)}
-                    id = get_val(file, row, "Puesto")
-                    data[id] = {
-                        "grupo": get_val(file, row, "Gr/Sb"),
-                        "nivel": get_val(file, row, "Nivel"),
-                        "complemento": get_val(file, row, "C.Específ.")
-                    }
+                    rows.append(Row(
+                        puesto=get_val(file, row, "Puesto"),
+                        grupo=get_val(file, row, "Gr/Sb"),
+                        nivel=get_val(file, row, "Nivel"),
+                        complemento=get_val(file, row, "C.Específ."),
+                        ministerio=get_val(file, row, "Minis."),
+                        direccion=get_val(file, row, "C.Dir"),
+                        unidad=get_val(file, row, "Unidad"),
+                    ))
+        return rows
 
+    @Cache(file="dwn/rpt/puestos.json", maxOld=1)
+    def get(self):
+        data = {}
+        for row in self.__get_rows():
+            data[row.puesto] = {
+                "grupo": row.grupo,
+                "nivel": row.nivel,
+                "complemento": row.complemento
+            }
         return data
+
+    @Cache(file="dwn/rpt/complemetos.json", maxOld=1)
+    def complemetos(self):
+        data = set()
+        for row in self.__get_rows():
+            data.add(Complemento(
+                complemento=row.complemento,
+                grupo=row.grupo,
+                nivel=row.nivel,
+                ministerio=row.ministerio,
+                direccion=row.direccion,
+                unidad=row.unidad
+            ))
+        return sorted(data, key=lambda x: x.complemento)
+
+
+if __name__ == "__main__":
+    RPT().complemetos()
