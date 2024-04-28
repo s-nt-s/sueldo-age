@@ -1,9 +1,9 @@
 retribuciones:
   root: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Paginas/RetribucionesPersonalFuncionario.aspx
-  2023: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%C3%91O%202023/Retribuciones%20del%20personal%20funcionario%20a%C3%B1o%202023%20(con%20incremento%20del%200,5%20IPCA).pdf
+  2024: https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%c3%91O%202024/Retribuciones%20personal%20funcionario%20LPGE%202023%20%28con%20incremento%200%2c5%25%20PIB%29.pdf
 muface:
   root: https://www.muface.es/muface_Home/mutualistas/cotizacion.html
-  2023: https://www.muface.es/muface_Home/mutualistas/cotizacion/Regimen-de-Cotizaciones.html
+  2024: https://www.muface.es/muface_Home/mutualistas/cotizacion/Regimen-de-Cotizaciones.html
 rpt:
   root: https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html
 funciona:
