@@ -74,10 +74,10 @@ class Retribuciones:
         w = Web(verify=False)
         w.get(self.root)
         for a in w.soup.select("a[href]"):
-            txt = a.get_text().strip()
+            txt = re_sp.sub(" ", a.get_text()).strip()
             if txt.startswith("Retribuciones del personal funcionario"):
                 txt = txt.replace("(", " (")
-                yr = [int(i) for i in txt.split() if i.isdigit()]
+                yr = tuple(map(int, re.findall(r"\d+", txt)))
                 if yr and yr[0] > 2000:
                     url = a.attrs["href"]
                     yr = yr[0]
