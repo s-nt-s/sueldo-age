@@ -1,47 +1,5 @@
-F=null;
-
-class Form {
-  
-  constructor() {
-    this.form = document.forms[0];
-    this.error = document.querySelector("#resultado p.error");
-    this.msg = document.querySelector("#resultado div.msg");
-    this.link = document.querySelector("#sueldo a");
-    this.grupo = this.form.elements['grupo'];
-    this.nivel = this.form.elements['nivel'];
-    this.grupos = Array.from(this.grupo.options).filter(e => e.value.length).map(e=>e.value);
-  }
-
-  get inputs() {
-      return Array.from(this.form.elements).filter(e=>{
-          return (e.name != null && e.name.length>0 || ["SELECT", "INPUT",  "TEXTAREA"].includes(e.tagName));
-      });
-  }
-
-  getData() {
-    const obj = {}
-    Array.from(new FormData(this.form)).forEach(([k, v])=> {
-        const _v = parseFloat(v);
-        if (!Number.isNaN(_v)) v=_v;
-        if (obj[k]==null) obj[k]=v;
-        else if (Array.isArray(obj[k])) obj[k].push(v);
-        else obj[k]=[obj[k], v];
-    })
-    return obj;
-  }
-
-  getQuery() {
-      return new URLSearchParams(Array.from(new FormData(this.form))).toString();
-  }
-
-  checkValidity(silent) {
-    if (!this.form.checkValidity()) {
-      if(silent !== true) this.form.reportValidity();
-      return false;
-    }
-    return true;
-  }
-}
+const DATA = new Data();
+const F = new Form();
 
 function addEventListenerAndFire(node, event, fnc) {
   node.addEventListener(event, fnc);
@@ -91,36 +49,31 @@ function parseForm(silent) {
   d.ss = safe_div(d.ss, 100);
   d.mei= safe_div(d.mei, 100);
 
-  d.muface = MUFACE[d.grupo];
-  if (d.muface==null) return null;
+  const g = DATA.grupo[d.grupo];
+  if (g == null) return null;
+  const n = DATA.nivel[d.nivel];
+  if (n == null) return null;
 
-  const r=RETRIB[d.grupo];
-  if (r==null) return null;
-
-  d.base = r.base.sueldo;
-  d.extra = r.diciembre.sueldo;
-
-  const n = RETRIB.niveles[d.nivel];
-  if (n==null) return null;
-
-  d.destino = n;
+  d.muface = g.muface;
+  d.base = g.base;
+  d.extra = g.extra_base;
+  d.destino = n.complemento;
 
   d.trienios={
     base:[],
     extra:[]
   }
-
-  F.grupos.forEach((g, i) => {
-    const tri = d["tri"+g];
+  Object.keys(DATA.grupo).forEach(gr=>{
+    const tri = d["tri"+gr];
     if (Number.isNaN(tri)) return;
-    const r=RETRIB[g];
-    if (r==null) return;
-    delete d["tri"+g];
+    delete d["tri"+gr];
     if (tri==0) return;
-    d.trienios[g]=tri;
-    d.trienios.base.push(tri*(r.base.trienio));
-    d.trienios.extra.push(tri*(r.diciembre.trienio));
-  });
+    const r = DATA.grupo[gr];
+    if (r==null) return;
+    d.trienios[gr]=tri;
+    d.trienios.base.push(tri*(r.trienio));
+    d.trienios.extra.push(tri*(r.extra_trienio));
+  })
   d.trienios.base = safe_sum.apply(this, d.trienios.base);
   d.trienios.extra = safe_sum.apply(this, d.trienios.extra);
 
@@ -133,6 +86,8 @@ function _do_salary(silent) {
   const d = parseForm(silent);
   if (d == null) return false;
 
+  
+  /** @type {Nomina} */
   const n = new Nomina({
       base: new Ingreso({anual: d.base+d.trienios.base, pagas: 12}),
       extra: new Ingreso({mensual: d.extra+d.trienios.extra, pagas: 2}),
@@ -164,7 +119,8 @@ function _do_salary(silent) {
 }
 
 function do_salary(silent) {
-  if(_do_salary(silent)) {
+  const r = _do_salary(silent);
+  if(r) {
     F.error.style.display = 'none';
     F.msg.style.display = '';
   } else {
@@ -175,17 +131,52 @@ function do_salary(silent) {
   F.link.href = "?"+Q.toString()+"#sueldo";
 }
 
-document.addEventListener('DOMContentLoaded', function(){
-  F = new Form();
-  addEventListenerAndFire(F.grupo, "change", function(){
-    const md = MODA[this.value];
-    if (md==null || md["nivel"]==null) return;
-    if (F.nivel.value.length==0) F.nivel.value = md["nivel"];
-  });
+const doMain = function(){
+  if (DATA.readyState == "loading") return;
+  if (document.readyState == "loading") return;
+
+  Object.values(DATA.fuente).forEach(i => {
+    const a1 = document.getElementById(i.id+"_url");
+    const a2 = document.getElementById(i.id+"_via");
+    if (a1) a1.href = i.url;
+    if (a2) a2.href = i.via;
+  })
+
+  const slot = document.getElementById("slot_trienios");
+  Object.keys(DATA.grupo).forEach(g=>{
+    F.grupo.insertAdjacentHTML('beforeend', `<option value="${g}">${g}</option>`);
+    slot.insertAdjacentHTML('beforeend', `
+      <div>
+      <label for="tri${g}">${g}</label>
+      <input
+        id="tri${g}"
+        max="17"
+        min="0"
+        name="tri${g}"
+        required
+        step="1"
+        style="width: 3em"
+        type="number"
+        value="0"
+      />
+      </div>
+    `);
+  })
+  const nvl = Object.keys(DATA.nivel);
+  F.nivel.min = nvl[0];
+  F.nivel.max = nvl[nvl.length-1];
+  F.especifico.min = DATA.especifico.min;
+  F.especifico.max = DATA.especifico.max;
+  document.body.classList.remove("loading");
+
   F.inputs.forEach(e=>{
     const v=Q.get(e.name);
     if (v!=null) e.value=v;
     e.addEventListener("change", do_salary);
   })
+  
   do_salary(true);
-});
+}
+
+document.addEventListener('DOMContentLoaded', doMain);
+document.addEventListener(Data.eventDataContentLoaded, doMain);

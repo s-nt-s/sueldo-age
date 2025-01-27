@@ -38,7 +38,7 @@ tr > td:first-child {
 .rg {
   text-align: right;
 }
-label:not(.free), span.label {
+label, span.label {
 	display: inline-block;
 	min-width: 7em;
 }
@@ -105,3 +105,63 @@ ol {
 	padding-left: 1.5em;
 	margin-left: 0;
 }
+
+#slot_trienios {
+	padding-top: 5px;
+	padding-bottom: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
+  justify-content: start; 
+  width: fit-content;
+}
+
+#slot_trienios label {
+  min-width: 0em !important;
+}
+
+body.loading > .loading {
+	display: block !important;
+}
+body.loading > main {
+	display: none;
+}
+body:not(.loading) > .loading {
+	display: none;
+}
+
+.loader {
+	width:1em;
+	aspect-ratio:1;
+	border-radius:50%;
+	background:#000;
+	display:inline-grid;
+	animation:l22-0 2s infinite linear;
+	margin-right:1em;
+	margin-left:1em
+  }
+  .loader:before,
+  .loader:after {
+	content:"";
+	grid-area:1/1;
+	margin:15%;
+	border-radius:50%;
+	background:inherit;
+	transform:rotate(0) translate(150%);
+	animation:l22 1s infinite
+  }
+  .loader:after {
+	animation-delay:-.5s
+  }
+
+  @keyframes l22-0 {
+	to {
+	  transform:rotate(1turn)
+	}
+  }
+  @keyframes l22 {
+	to {
+	  transform:rotate(1turn) translate(150%)
+	}
+  }
