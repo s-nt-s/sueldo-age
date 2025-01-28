@@ -150,7 +150,7 @@ const doMain = function(){
       <label for="tri${g}">${g}</label>
       <input
         id="tri${g}"
-        max="17"
+        max="20"
         min="0"
         name="tri${g}"
         required
