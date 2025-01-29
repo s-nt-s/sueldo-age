@@ -138,8 +138,14 @@ const doMain = function(){
   Object.values(DATA.fuente).forEach(i => {
     const a1 = document.getElementById(i.id+"_url");
     const a2 = document.getElementById(i.id+"_via");
+    const a = (a1 || a2);
     if (a1) a1.href = i.url;
     if (a2) a2.href = i.via;
+    if (a!=null) {
+      const t = (a.title || "").trim();
+      if (t.length == 0) a.title="Datos de "+i.fecha;
+      else a.title=t+ " (datos de "+i.fecha+")"
+    }
   })
 
   const slot = document.getElementById("slot_trienios");
