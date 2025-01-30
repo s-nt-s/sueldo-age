@@ -61,6 +61,23 @@ class Nivel extends Item {
     }
 }
 
+class Puesto extends Item {
+    /** @type {string[]} */
+    get grupo() {
+        return this._obj.grupo;
+    }
+    /** @type {number} */
+    get nivel() {
+        return this._obj.nivel;
+    }
+    /** @type {number} */
+    get especifico() {
+        return this._obj.especifico;
+    }
+}
+
+
+
 class Data {
     static eventDataContentLoaded = "DATAContentLoaded"
 
@@ -81,6 +98,7 @@ class Data {
         this.#grupo = null;
         this.#nivel = null;
         this.#especifico = null;
+        this.getPuesto = cache(this, this.getPuesto);
         this.#init();
     }
 
@@ -166,6 +184,11 @@ class Data {
     }
     async gruposEnNivel(val) {
         return await this.#db.selectWhere("grupo_nivel.grupo", "nivel", val);
+    }
+    async getPuesto(id) {
+        const p = await this.#db.get_one("puesto", id);
+        p.grupo = await this.#db.selectWhere("puesto_grupo.grupo", "puesto", p.id);
+        return new Puesto(p);
     }
 }
 

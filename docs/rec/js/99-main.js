@@ -147,7 +147,7 @@ function syncGrupoNivel() {
   })
 }
 
-const doMain = function(){
+const doMain = async function(){
   if (DATA.readyState == "loading") return;
   if (document.readyState == "loading") return;
 
@@ -201,6 +201,13 @@ const doMain = function(){
     if (v!=null) e.value=v;
     e.addEventListener("change", do_salary);
   })
+  const idp = parseInt(Q.get("puesto"));
+  if (!isNaN(idp)) {
+    const puesto = await DATA.getPuesto(idp);
+    if (puesto.grupo.length==1) F.grupo.value = puesto.grupo[0];
+    F.nivel.value = puesto.nivel;
+    F.especifico.value = puesto.especifico;
+  }
   
   syncGrupoNivel();
   do_salary(true);
