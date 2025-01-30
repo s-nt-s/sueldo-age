@@ -48,6 +48,10 @@ class Grupo extends Item {
     get muface() {
         return this._obj.muface_cotizacion;
     }
+    /** @type {number[]} */
+    get niveles() {
+        return this._obj.niveles;
+    }
 }
 
 class Nivel extends Item {
@@ -60,6 +64,7 @@ class Nivel extends Item {
 class Data {
     static eventDataContentLoaded = "DATAContentLoaded"
 
+    /** @type {DB} */
     #db;
     /** @type {Record<string, Fuente>} */
     #fuente;
@@ -71,7 +76,7 @@ class Data {
     #especifico;
 
     constructor() {
-        this.#db = new DBAge();
+        this.#db = new DB();
         this.#fuente = null;
         this.#grupo = null;
         this.#nivel = null;
@@ -120,16 +125,47 @@ class Data {
             }));
         }
         to_obj("fuente", Fuente).then(o=>this.#fuente=o).finally(fire);
-        to_obj("grupo", Grupo).then(o=>this.#grupo=o).finally(fire);
         to_obj("nivel", Nivel).then(o=>this.#nivel=o).finally(fire);
+        this.#getGrupos().then(o=>this.#grupo=o).finally(fire);
         this.#db.minmax("puesto.especifico").then(o=>this.#especifico=o).finally(fire);
     }
+
+    get niveles() {
+        const nvls = new Set();
+        Object.values(this.#grupo).forEach(g=>{
+            g.niveles.forEach(n=>nvls.add(n));
+        })
+        const arr = Array.from(nvls).sort((a, b) => a - b);
+        return Object.freeze(arr);
+    }
+
+    async #getGrupos() {
+        const grnv = await this.db.all("grupo_nivel");
+        const grps = await this.db.all("grupo");
+        const r = {};
+        grps.forEach(e => {
+            e.niveles = [];
+            grnv.forEach(nv=>{
+                if (nv.grupo==e.id) e.niveles.push(nv.nivel);
+            })
+            e.niveles = Object.freeze(e.niveles);
+            r[e.id] = new Grupo(e);
+        });
+        return Object.freeze(r)
+    }
+
     get readyState() {
         if (this.#fuente == null) return "loading";
         if (this.#grupo == null) return "loading";
         if (this.#nivel == null) return "loading";
         if (this.#especifico == null) return "loading";
         return "complete";
+    }
+    async nivelesEnGrupo(val) {
+        return await this.#db.selectWhere("grupo_nivel.nivel", "grupo", val);
+    }
+    async gruposEnNivel(val) {
+        return await this.#db.selectWhere("grupo_nivel.grupo", "nivel", val);
     }
 }
 

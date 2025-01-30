@@ -18,7 +18,7 @@ class Form {
     get grupo() {
         return this.form.elements['grupo'];
     }
-    /** @type {HTMLInputElement} */
+    /** @type {HTMLSelectElement} */
     get nivel() {
         return this.form.elements['nivel'];
     }

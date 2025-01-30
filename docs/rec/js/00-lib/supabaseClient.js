@@ -11,7 +11,7 @@ function cache(_this_, func) {
 }
 
 
-class DBAge {
+class DB {
   #db;
   #onerror
 
@@ -44,32 +44,32 @@ class DBAge {
   }
 
   async get_one(table, id) {
-    const r = await this.get(table, id);
+    const r = await this.selectWhere(table, 'id', id);
     if (r.length == 1) return r[0];
     throw `${table}[id=${id}] devuelve ${r.length} resultados`;
   }
 
   async get(table, ...ids) {
-    let prm = this.from(table).select();
-    if (ids.length == 1) prm = prm.eq('id', ids[0]);
-    else if (ids.length>1) prm = prm.in('id', ids);
-    return this.get_data(
-      ids.length==0?table:`${table}[id=${ids}]`,
+    return await this.selectWhere(table, 'id', ...ids);
+  }
+
+  async selectWhere(table_field, where_field, ...arr) {
+    let [table, field] = table_field.split(".");
+    let prm = this.from(table)
+    if (field==null) prm = prm.select();
+    else prm = prm.select(field)
+    if (arr.length == 1) prm = prm.eq(where_field, arr[0]);
+    else if (arr.length>1) prm = prm.in(where_field, arr);
+    const r = this.get_data(
+      arr.length==0?table_field:`${table_field}[${where_field}=${arr}]`,
       await prm
     );
+    if (field == null) return r;
+    return r.map(i=>i[field]);
   }
 
   async all(table) {
     return this.get(table);
-  }
-
-  async select(table_field) {
-    let [t, f] = table_field.split(".");
-    let prm = this.from(t).select(f).order(f);
-    return this.get_data(
-      `${table_field}`,
-      await prm
-    ).map(e=>e[f]);
   }
 
   async minmax(table_field) {
@@ -94,7 +94,4 @@ class DBAge {
       max:mx
     };
   }
-
 }
-
-const DB = new DBAge();

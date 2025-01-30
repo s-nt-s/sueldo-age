@@ -1,4 +1,6 @@
+/** @type {Data} */
 const DATA = new Data();
+/** @type {Form} */
 const F = new Form();
 
 function addEventListenerAndFire(node, event, fnc) {
@@ -131,6 +133,20 @@ function do_salary(silent) {
   F.link.href = "?"+Q.toString()+"#sueldo";
 }
 
+function syncGrupoNivel() {
+  const gr = DATA.grupo[F.grupo.value] || {};
+  const ok = gr.niveles || DATA.niveles;
+  const mn = ok[0];
+  const mx = ok[ok.length-1];
+  F.nivel.querySelectorAll("option").forEach(o=>{
+    const n = parseInt(o.value);
+    const ko = !isNaN(n) && (n<mn || n>mx);
+    o.disabled = ko;
+    o.style.display = ko?'none':'';
+    if (ko && o.selected) o.selected=false;
+  })
+}
+
 const doMain = function(){
   if (DATA.readyState == "loading") return;
   if (document.readyState == "loading") return;
@@ -168,6 +184,9 @@ const doMain = function(){
       </div>
     `);
   })
+  DATA.niveles.forEach(n=>{
+    F.nivel.insertAdjacentHTML('beforeend', `<option value="${n}">${n}</option>`);
+  })
   const nvl = Object.keys(DATA.nivel);
   F.nivel.min = nvl[0];
   F.nivel.max = nvl[nvl.length-1];
@@ -175,12 +194,15 @@ const doMain = function(){
   F.especifico.max = DATA.especifico.max;
   document.body.classList.remove("loading");
 
+  F.grupo.addEventListener("change", syncGrupoNivel);
+
   F.inputs.forEach(e=>{
     const v=Q.get(e.name);
     if (v!=null) e.value=v;
     e.addEventListener("change", do_salary);
   })
   
+  syncGrupoNivel();
   do_salary(true);
 }
 
