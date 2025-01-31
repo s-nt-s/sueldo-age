@@ -153,19 +153,22 @@ class Data {
                 return Object.freeze(r)
             })
         }
-        const fire = () => {
-            if (this.readyState=="loading") return;
-            console.log("FIRE ", Data.eventDataContentLoaded)
-            document.dispatchEvent(new CustomEvent(Data.eventDataContentLoaded, {
-                detail: this,
-                bubbles: true,
-                cancelable: false
-            }));
-        }
-        to_obj("fuente", Fuente).then(o=>this.#fuente=o).finally(fire);
-        to_obj("nivel", Nivel).then(o=>this.#nivel=o).finally(fire);
-        this.#getGrupos().then(o=>this.#grupo=o).finally(fire);
-        this.#db.minmax("puesto.especifico").then(o=>this.#especifico=o).finally(fire);
+        [
+            this.#fuente,
+            this.#nivel,
+            this.#grupo,
+            this.#especifico
+        ] = await Promise.all([
+            to_obj("fuente", Fuente),
+            to_obj("nivel", Nivel),
+            this.#getGrupos(),
+            this.#db.minmax("puesto.especifico")
+        ]);
+        document.dispatchEvent(new CustomEvent(Data.eventDataContentLoaded, {
+            detail: this,
+            bubbles: true,
+            cancelable: false
+        }));
     }
 
     get niveles() {
@@ -178,8 +181,10 @@ class Data {
     }
 
     async #getGrupos() {
-        const grnv = await this.db.all("grupo_nivel");
-        const grps = await this.db.all("grupo");
+        const [grnv, grps] = await Promise.all([
+            this.db.all("grupo_nivel"),
+            this.db.all("grupo")
+        ]);
         const r = {};
         grps.forEach(e => {
             e.niveles = [];
@@ -206,8 +211,11 @@ class Data {
         return await this.#db.selectWhere("grupo_nivel.grupo", "nivel", val);
     }
     async getPuesto(id) {
-        const p = await this.#db.get_one("puesto", id);
-        p.grupo = await this.#db.selectWhere("puesto_grupo.grupo", "puesto", p.id);
+        const [p, grupo] = await Promise.all([
+            this.#db.get_one("puesto", id),
+            this.#db.selectWhere("puesto_grupo.grupo", "puesto", id)
+        ]);
+        p.grupo = grupo;
         return new Puesto(p);
     }
 }

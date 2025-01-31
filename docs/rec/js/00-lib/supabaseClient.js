@@ -61,20 +61,24 @@ class DB {
 
   async minmax(table_field) {
     let [t, f] = table_field.split(".");
-
-    const prm1 = this.from(t).select(f).order(f, { ascending: true }).limit(1);
-    const prm2 = this.from(t).select(f).order(f, { ascending: false }).limit(1);
+    const [
+      prm1,
+      prm2
+    ] = await Promise.all([
+      this.from(t).select(f).order(f, { ascending: true }).limit(1),
+      this.from(t).select(f).order(f, { ascending: false }).limit(1)
+    ]);
 
     /** @type {number} */
     const mn = this.get_data(
       `min(${table_field})`,
-      await prm1
+      prm1
     )[0][f];
 
     /** @type {number} */
     const mx = this.get_data(
       `max(${table_field})`,
-      await prm2
+      prm2
     )[0][f];
     return {
       min:mn,
