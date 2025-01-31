@@ -133,9 +133,8 @@ function do_salary(silent) {
   F.link.href = "?"+Q.toString()+"#sueldo";
 }
 
-function syncGrupoNivel() {
-  const gr = DATA.grupo[F.grupo.value] || {};
-  const ok = gr.niveles || DATA.niveles;
+function syncInputs() {
+  const ok = DATA.getRangeNiveles(F.grupo.value);
   const mn = ok[0];
   const mx = ok[ok.length-1];
   F.nivel.querySelectorAll("option").forEach(o=>{
@@ -145,6 +144,14 @@ function syncGrupoNivel() {
     o.style.display = ko?'none':'';
     if (ko && o.selected) o.selected=false;
   })
+  const rg = DATA.getRangeEspecifico(F.grupo.value, F.nivel.value);
+  F.especifico.min = rg.min;
+  F.especifico.max = rg.max;
+  if (rg.min == rg.max) F.especifico.value = rg.min;
+  else {
+    const e = parseFloat(F.especifico.value);
+    if (isNaN(e) || e>rg.max || e<rg.min) F.especifico.value="";
+  }
 }
 
 const doMain = async function(){
@@ -184,17 +191,16 @@ const doMain = async function(){
       </div>
     `);
   })
-  DATA.niveles.forEach(n=>{
+  console.log(DATA.getRangeNiveles())
+  DATA.getRangeNiveles().forEach(n=>{
     F.nivel.insertAdjacentHTML('beforeend', `<option value="${n}">${n}</option>`);
   })
   const nvl = Object.keys(DATA.nivel);
   F.nivel.min = nvl[0];
   F.nivel.max = nvl[nvl.length-1];
-  F.especifico.min = DATA.especifico.min;
-  F.especifico.max = DATA.especifico.max;
-  document.body.classList.remove("loading");
 
-  F.grupo.addEventListener("change", syncGrupoNivel);
+  F.grupo.addEventListener("change", syncInputs);
+  F.nivel.addEventListener("change", syncInputs);
 
   F.inputs.forEach(e=>{
     const v=Q.get(e.name);
@@ -209,7 +215,8 @@ const doMain = async function(){
     F.especifico.value = puesto.especifico;
   }
   
-  syncGrupoNivel();
+  syncInputs();
+  document.body.classList.remove("loading");
   do_salary(true);
 }
 

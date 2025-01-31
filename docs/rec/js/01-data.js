@@ -57,7 +57,14 @@ class Grupo extends Item {
 class Nivel extends Item {
     /** @type {number} */
     get complemento() {
-        return this._obj.complemento_destino;
+        return this._obj.destino;
+    }
+    /** @type {min: number, max: number} */
+    get especifico() {
+        return {
+            min: this._obj.min_especifico,
+            max: this._obj.max_especifico
+        }
     }
 }
 
@@ -89,8 +96,6 @@ class Data {
     #grupo;
     /** @type {Record<number, Nivel>} */
     #nivel;
-    /** @type {min: number, max: number} */
-    #especifico;
     /** @type {number} */
     #mei;
 
@@ -99,8 +104,9 @@ class Data {
         this.#fuente = null;
         this.#grupo = null;
         this.#nivel = null;
-        this.#especifico = null;
-        this.getPuesto = cache(this, this.getPuesto);
+        this.getPuesto = asyncCache(this, this.getPuesto);
+        this.getRangeEspecifico = cache(this, this.getRangeEspecifico);
+        this.getRangeNiveles = cache(this, this.getRangeNiveles);
         // https://www.boe.es/buscar/act.php?id=BOE-A-2023-6967
         this.#mei = (()=>{
             const y = new Date().getFullYear();
@@ -130,10 +136,6 @@ class Data {
         return this.#nivel;
     }
 
-    get especifico() {
-        return this.#especifico;
-    }
-
     get mei() {
         return this.#mei;
     }
@@ -153,16 +155,18 @@ class Data {
                 return Object.freeze(r)
             })
         }
+        let puesto;
         [
             this.#fuente,
             this.#nivel,
             this.#grupo,
+            puesto
         ] = await Promise.all([
             to_obj("fuente", Fuente),
-            to_obj("nivel", Nivel),
+            this.#getNiveles(),
             this.#getGrupos(),
+            this.getPuesto(Q.puesto)
         ]);
-        this.#especifico = await this.#db.minmax("puesto.especifico", "nivel", ...this.niveles);
         document.dispatchEvent(new CustomEvent(Data.eventDataContentLoaded, {
             detail: this,
             bubbles: true,
@@ -170,13 +174,51 @@ class Data {
         }));
     }
 
-    get niveles() {
+    /** @type {number[]} */
+    getRangeNiveles(gr) {
+        const grp = this.grupo[gr];
+        if (grp!=null) return grp.niveles;
         const nvls = new Set();
         Object.values(this.#grupo).forEach(g=>{
             g.niveles.forEach(n=>nvls.add(n));
         })
         const arr = Array.from(nvls).sort((a, b) => a - b);
         return Object.freeze(arr);
+    }
+
+    /** @type {min: number, max: number} */
+    getRangeEspecifico(gr, nv) {
+        const n = this.nivel[parseInt(nv)];
+        if (n!=null) return n.especifico;
+        const grp = this.grupo[gr];
+        const grps = grp==null?Object.values(this.grupo):[grp];
+        let mn = Infinity;
+        let mx = -Infinity;
+        grps.forEach(g=>{
+            g.niveles.forEach(i=>{
+                const es = this.nivel[i].especifico;
+                if (es.min < mn) mn = es.min;
+                if (es.max > mx) mx = es.max;
+            })
+        })
+        return {
+            min: mn,
+            max: mx
+        }
+    }
+
+    async #getNiveles() {
+        let i = 0;
+        const nvl = await this.db.all("nivel_complemento");
+        if (nvl[0].min_especifico == null) nvl[0].min_especifico = 0;
+        if (nvl[nvl.length-1].max_especifico == null) nvl[nvl.length-1].max_especifico = Infinity;
+        nvl.forEach((n, x)=>{
+            if (n.min_especifico == null) n.min_especifico = nvl[x-1].max_especifico;
+            if (n.max_especifico == null) n.max_especifico = nvl[x+1].min_especifico;
+        })
+        const r = {};
+        nvl.forEach(n=>r[n.id]=new Nivel(n));
+        return Object.freeze(r);
     }
 
     async #getGrupos() {
@@ -200,7 +242,6 @@ class Data {
         if (this.#fuente == null) return "loading";
         if (this.#grupo == null) return "loading";
         if (this.#nivel == null) return "loading";
-        if (this.#especifico == null) return "loading";
         return "complete";
     }
     async nivelesEnGrupo(val) {
@@ -210,6 +251,8 @@ class Data {
         return await this.#db.selectWhere("grupo_nivel.grupo", "nivel", val);
     }
     async getPuesto(id) {
+        id = parseInt(id);
+        if (isNaN(id)) return null;
         const [p, grupo] = await Promise.all([
             this.#db.get_one("puesto", id),
             this.#db.selectWhere("puesto_grupo.grupo", "puesto", id)

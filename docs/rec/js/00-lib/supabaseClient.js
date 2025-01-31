@@ -9,10 +9,10 @@ class DB {
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6ZGhtanJ6ZHl3bHpiaG1obXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczNzQ1NDIsImV4cCI6MjA1Mjk1MDU0Mn0.UJAf3qUL2bt5NTS-1koXUATbuLKMMBc5_1okDsmuGvc",
     );
     this.#onerror = onerror;
-    this.get = cache(this, this.get);
-    this.get_one = cache(this, this.get_one);
-    this.select = cache(this, this.select);
-    this.minmax = cache(this, this.minmax);
+    this.get = asyncCache(this, this.get);
+    this.get_one = asyncCache(this, this.get_one);
+    this.select = asyncCache(this, this.select);
+    this.minmax = asyncCache(this, this.minmax);
   }
 
 
@@ -61,10 +61,11 @@ class DB {
 
   async minmax(table_field, where_field, ...arr) {
     let [t, f] = table_field.split(".");
+    let where='';
     const getPrm = () => {
       let prm = this.from(t).select(f);
       if (where_field!=null && arr.length>0) {
-        console.log(arr)
+        where=`[${where_field}=${arr}]`;
         if (arr.length == 1) prm = prm.eq(where_field, arr[0]);
         else if (arr.length>1) prm = prm.in(where_field, arr);
       }
@@ -80,18 +81,18 @@ class DB {
 
     /** @type {number} */
     const mn = this.get_data(
-      `min(${table_field})`,
+      `min(${table_field}${where})`,
       prm1
-    )[0][f];
+    )[0];
 
     /** @type {number} */
     const mx = this.get_data(
-      `max(${table_field})`,
+      `max(${table_field}${where})`,
       prm2
-    )[0][f];
+    )[0];
     return {
-      min:mn,
-      max:mx
+      min:mn==null?undefined:mn[f],
+      max:mx==null?undefined:mx[f]
     };
   }
 }
