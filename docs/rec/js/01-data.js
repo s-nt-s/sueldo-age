@@ -157,13 +157,12 @@ class Data {
             this.#fuente,
             this.#nivel,
             this.#grupo,
-            this.#especifico
         ] = await Promise.all([
             to_obj("fuente", Fuente),
             to_obj("nivel", Nivel),
             this.#getGrupos(),
-            this.#db.minmax("puesto.especifico")
         ]);
+        this.#especifico = await this.#db.minmax("puesto.especifico", "nivel", ...this.niveles);
         document.dispatchEvent(new CustomEvent(Data.eventDataContentLoaded, {
             detail: this,
             bubbles: true,

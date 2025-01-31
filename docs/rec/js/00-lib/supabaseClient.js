@@ -59,14 +59,23 @@ class DB {
     return this.get(table);
   }
 
-  async minmax(table_field) {
+  async minmax(table_field, where_field, ...arr) {
     let [t, f] = table_field.split(".");
+    const getPrm = () => {
+      let prm = this.from(t).select(f);
+      if (where_field!=null && arr.length>0) {
+        console.log(arr)
+        if (arr.length == 1) prm = prm.eq(where_field, arr[0]);
+        else if (arr.length>1) prm = prm.in(where_field, arr);
+      }
+      return prm;
+    }
     const [
       prm1,
       prm2
     ] = await Promise.all([
-      this.from(t).select(f).order(f, { ascending: true }).limit(1),
-      this.from(t).select(f).order(f, { ascending: false }).limit(1)
+      getPrm().order(f, { ascending: true }).limit(1),
+      getPrm().order(f, { ascending: false }).limit(1)
     ]);
 
     /** @type {number} */
