@@ -49,7 +49,7 @@ function parseForm(silent) {
   const d = F.getData();
   d.irpf = safe_div(d.irpf, 100);
   d.ss = safe_div(d.ss, 100);
-  d.mei= safe_div(d.mei, 100);
+  d.mei= safe_div(DATA.mei, 100);
 
   const g = DATA.grupo[d.grupo];
   if (g == null) return null;

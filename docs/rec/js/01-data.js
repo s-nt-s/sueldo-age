@@ -91,6 +91,8 @@ class Data {
     #nivel;
     /** @type {min: number, max: number} */
     #especifico;
+    /** @type {number} */
+    #mei;
 
     constructor() {
         this.#db = new DB();
@@ -99,6 +101,20 @@ class Data {
         this.#nivel = null;
         this.#especifico = null;
         this.getPuesto = cache(this, this.getPuesto);
+        // https://www.boe.es/buscar/act.php?id=BOE-A-2023-6967
+        this.#mei = (()=>{
+            const y = new Date().getFullYear();
+            if (y>=2029 && y<=2050) return 0.2;
+            const mei = {
+                2023: 0.1,
+                2024: 0.12,
+                2025: 0.13,
+                2026: 0.15,
+                2027: 0.17,
+                2028: 0.18,
+            }[y];
+            return mei??0;
+        })();
         this.#init();
     }
 
@@ -116,6 +132,10 @@ class Data {
 
     get especifico() {
         return this.#especifico;
+    }
+
+    get mei() {
+        return this.#mei;
     }
 
     get db() {
