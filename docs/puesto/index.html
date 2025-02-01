@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Puesto</title>
+    <link
+      href="../rec/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../rec/js/00-lib/cache.js"></script>
+    <script src="../rec/js/00-lib/Q.js"></script>
+    <script src="../rec/js/00-lib/supabaseClient.js"></script>
+    <script src="../rec/js/01-data.js"></script>
+    <script src="../rec/js/10-nomina.js"></script>
+    <script src="./main.js"></script>
+  </head>
+  <body class="loading">
+    <p class="loading">
+      <span class="loader"></span>Cargando...
+    </p>
+    <main>
+      <dl>
+        <dt>Puesto</dt><dl id="puesto"></dl>
+        <dt id="grupo">Grupo</dt>
+        <dt>Nivel</dt><dl id="nivel"></dl>
+        <dt class="if_grupo">Sueldo bruto</dt><dl class="if_grupo" id="sueldo"></dl>
+        <dt>Cargo</dt><dl id="cargo"></dl>
+        <dt>Administración</dt><dl id="administracion"></dl>
+      </dl>
+      <hr />
+      <ol>
+        <li id="n1">
+          Dato obtenido de
+          <a
+			id="retribuciones_url"
+            href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%C3%91O%202024/Retribuciones%20personal%20funcionario.%20A%C3%B1o%202024%20(Real%20Decreto-ley%204%202024,%20de%2026%20de%20junio,)%20.pdf"
+            target="_blank"
+            >la tabla de retribuciones</a
+          >
+          <a
+		  	id="retribuciones_via"
+            class="info"
+            href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Paginas/RetribucionesPersonalFuncionario.aspx"
+            target="_blank"
+            title="Otras tablas de retribuciones"
+            >(+)</a
+          >
+        </li>
+        <li id="n2">
+          Dato obtenido de
+          <a
+		  	id="rpt_url"
+            href="https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html"
+            target="_blank"
+            >la RPT</a
+          >
+          <a
+		  	id="rpt_via"
+            class="info"
+            href="https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html"
+            target="_blank"
+            title="Todas las RPT"
+            >(+)</a
+          >
+        </li>
+        <li id="n5">
+          Dato obtenido
+          <a
+			id="muface_url"
+            href="https://www.muface.es/muface_Home/mutualistas/cotizacion/Regimen-de-Cotizaciones.html"
+            target="_blank"
+            >de Muface</a
+          >
+        </li>
+      </ol>
+    </main>
+    <footer>
+      <p>
+        Código fuente en
+        <a href="https://github.com/s-nt-s/sueldo-age" target="_blank">GitHub</a
+        >. Si falla o tienes alguna sugerencia pon un
+        <a href="https://github.com/s-nt-s/sueldo-age/issues" target="_blank"
+          >issue</a
+        >.
+      </p>
+    </footer>
+  </body>
+</html>

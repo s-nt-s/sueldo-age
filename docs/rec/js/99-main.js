@@ -207,12 +207,19 @@ const doMain = async function(){
     if (v!=null) e.value=v;
     e.addEventListener("change", do_salary);
   })
-  const idp = parseInt(Q.get("puesto"));
-  if (!isNaN(idp)) {
-    const puesto = await DATA.getPuesto(idp);
-    if (puesto.grupo.length==1) F.grupo.value = puesto.grupo[0];
+  const puesto = await DATA.getPuesto(Q.get("puesto"));
+  if (puesto!=null) {
     F.nivel.value = puesto.nivel;
     F.especifico.value = puesto.especifico;
+    if (puesto.grupo.length==1) F.grupo.value = puesto.grupo[0];
+    if (F.grupo.value.length>0) {
+
+      document.querySelectorAll(".hide_if_puesto").forEach(n=>n.style.display='none');
+      document.querySelectorAll(".show_if_puesto").forEach(n=>n.style.display='');
+      document.querySelector(".show_if_puesto").insertAdjacentHTML('beforeend', `
+        Puesto <a href='./puesto?puesto=${puesto.id}'>${puesto.id}</a> (${F.grupo.value} ${F.nivel.value})
+      `);
+    }
   }
   
   syncInputs();

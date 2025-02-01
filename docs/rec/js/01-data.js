@@ -81,6 +81,14 @@ class Puesto extends Item {
     get especifico() {
         return this._obj.especifico;
     }
+    /** @type {number} */
+    get cargo() {
+        return this._obj.cargo;
+    }
+    /** @type {string} */
+    get administracion() {
+        return this._obj.administracion;
+    }
 }
 
 
