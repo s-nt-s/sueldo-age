@@ -44,6 +44,7 @@ const doMain = async function () {
   const nivel = DATA.nivel[puesto.nivel];
   $("puesto").textContent = puesto.id;
   $("nivel").textContent = nivel.id;
+  $("vacante").textContent = puesto.vacante?"Si":"No";
   if (grupo != null) {
     $("grupo").insertAdjacentHTML("afterend", `<dd>${grupo.id}</dd>`);
     const sueldo = getSueldo(puesto, grupo, nivel);

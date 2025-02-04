@@ -109,6 +109,10 @@ class Puesto extends Item {
     get formacion() {
         return this._obj.formacion;
     }
+    /** @type {boolean} */
+    get vacante() {
+        return this._obj.vacante;
+    }
 }
 
 
