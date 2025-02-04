@@ -191,7 +191,6 @@ const doMain = async function(){
       </div>
     `);
   })
-  console.log(DATA.getRangeNiveles())
   DATA.getRangeNiveles().forEach(n=>{
     F.nivel.insertAdjacentHTML('beforeend', `<option value="${n}">${n}</option>`);
   })

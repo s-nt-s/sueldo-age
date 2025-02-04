@@ -37,6 +37,7 @@ const doMain = async function () {
   /** @type {Puesto} */
   const puesto = await DATA.getPuesto(Q.get("puesto"));
   if (puesto == null) throw "Puesto no encontrado";
+  document.title = "Puesto "+puesto.id;
   /** @type {Grupo} */
   const grupo = getGrupo(puesto);
   /** @type {Nivel} */
@@ -48,14 +49,14 @@ const doMain = async function () {
     const sueldo = getSueldo(puesto, grupo, nivel);
     $("sueldo").insertAdjacentHTML(
       "beforeend",
-      `<a title='${toString(sueldo.bruto.anual, 2)} €/año' href='../?${puesto.id}'>${toString(sueldo.bruto.anual)} €/año</a>`
+      `<a title='${toString(sueldo.bruto.anual, 2)} €/año' href='../?${puesto.id}&${grupo.id}'>${toString(sueldo.bruto.anual)} €/año</a>`
     );
   } else {
     puesto.grupo.reverse().forEach((g) => {
       const sueldo = getSueldo(puesto, DATA.grupo[g], nivel);
       $("grupo").insertAdjacentHTML(
         "afterend",
-        `<dd><a href="?${puesto.id}&${g}">${g}</a> (sueldo <a title='${toString(sueldo.bruto.anual, 2)} €/año' href='../${puesto.id}&${g}'>${toString(sueldo.bruto.anual)} €/año</a>)</dd>`
+        `<dd><a href="?${puesto.id}&${g}">${g}</a> (sueldo <a title='${toString(sueldo.bruto.anual, 2)} €/año' href='../?${puesto.id}&${g}'>${toString(sueldo.bruto.anual)} €/año</a>)</dd>`
       );
     });
   }
@@ -120,11 +121,11 @@ async function getFromPuesto(table, id) {
 
 function showMain() {
   document.querySelectorAll("dd").forEach(dd=>{
-    //if (dd.textContent.trim().length==0) dd.remove();
+    if (dd.textContent.trim().length==0) dd.remove();
   })
   document.querySelectorAll("dt").forEach(dt=>{
     if (!dt.nextElementSibling || dt.nextElementSibling.tagName !== "DD") {
-      //dt.remove();
+      dt.remove();
     }
   })
   document.body.classList.remove("loading");
