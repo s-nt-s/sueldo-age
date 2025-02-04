@@ -56,7 +56,7 @@ class Grupo extends Item {
 
 class Nivel extends Item {
     /** @type {number} */
-    get complemento() {
+    get destino() {
         return this._obj.destino;
     }
     /** @type {min: number, max: number} */
@@ -88,6 +88,26 @@ class Puesto extends Item {
     /** @type {string} */
     get administracion() {
         return this._obj.administracion;
+    }
+    /** @type {number} */
+    get unidad() {
+        return this._obj.unidad;
+    }
+    /** @type {number} */
+    get localidad() {
+        return this._obj.localidad;
+    }
+    /** @type {string} */
+    get tipo() {
+        return this._obj.tipo;
+    }
+    /** @type {string} */
+    get provision() {
+        return this._obj.provision;
+    }
+    /** @type {string} */
+    get formacion() {
+        return this._obj.formacion;
     }
 }
 

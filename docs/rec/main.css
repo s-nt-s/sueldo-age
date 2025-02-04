@@ -93,7 +93,7 @@ th img {
 	max-width: 50%;
 	max-height: 50%;
 }
-#sueldo a {
+th#sueldo a {
 	text-decoration: none;
 	font-weight: bold;
 }
@@ -165,3 +165,20 @@ body:not(.loading) > .loading {
 	  transform:rotate(1turn) translate(150%)
 	}
   }
+
+  dl {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 8px 16px; /* Espaciado entre elementos */
+  }
+  
+  dt {
+	font-weight: bold;
+	grid-column: 1; /* Primera columna */
+  }
+  
+  dd {
+	margin: 0; /* Elimina el margen predeterminado */
+	grid-column: 2; /* Segunda columna */
+  }
+  

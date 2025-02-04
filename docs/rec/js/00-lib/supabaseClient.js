@@ -47,11 +47,17 @@ class DB {
     else prm = prm.select(field)
     if (arr.length == 1) prm = prm.eq(where_field, arr[0]);
     else if (arr.length>1) prm = prm.in(where_field, arr);
+    if (field!=null) prm = prm.order(field, { ascending: true });
     const r = this.get_data(
       arr.length==0?table_field:`${table_field}[${where_field}=${arr}]`,
       await prm
     );
-    if (field == null) return r;
+    if (field == null) {
+      if (r.length==0) return r;
+      if (typeof r[0].id == "number") return r.sort((a, b)=>b.id-a.id);
+      if (typeof r[0].id == "string") return r.sort((a, b)=>b.id.localeCompare(a.id));
+      return r;
+    }
     return r.map(i=>i[field]);
   }
 

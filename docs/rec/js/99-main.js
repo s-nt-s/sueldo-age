@@ -59,7 +59,7 @@ function parseForm(silent) {
   d.muface = g.muface;
   d.base = g.base;
   d.extra = g.extra_base;
-  d.destino = n.complemento;
+  d.destino = n.destino;
 
   d.trienios={
     base:[],
@@ -217,7 +217,7 @@ const doMain = async function(){
       document.querySelectorAll(".hide_if_puesto").forEach(n=>n.style.display='none');
       document.querySelectorAll(".show_if_puesto").forEach(n=>n.style.display='');
       document.querySelector(".show_if_puesto").insertAdjacentHTML('beforeend', `
-        Puesto <a href='./puesto?puesto=${puesto.id}'>${puesto.id}</a> (${F.grupo.value} ${F.nivel.value})
+        Puesto <a href='./puesto?${puesto.id}'>${puesto.id}</a> (${F.grupo.value} ${F.nivel.value})
       `);
     }
   }

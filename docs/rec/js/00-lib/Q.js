@@ -8,21 +8,25 @@ class MKQ {
       window.location.hash.substring(1);
     this.#Q = MKQ.parse(this.#qr, skipVal);
   }
+  static #getPair(item) {
+    const pair = item.split('=');
+    const k = decodeURIComponent(pair[0]);
+    const v = decodeURIComponent(pair[1] || '').replace(/\++/g, " ").trim();
+    if (pair.length==2) {
+      const _v = parseFloat(v);
+      if (!Number.isNaN(_v)) return [k, _v];
+      return [k, v];
+    }
+    if (pair.length!=1) throw "Bad query pair: "+item;
+    if (["A1", "A2", "C1", "C2", "E", "B"].includes(k)) return ["grupo", k];
+    if (/^\d+$/.test(k)) return ["puesto", parseInt(k)];
+    return [k, true];
+  }
   static parse(qr, skipVal) {
     if (qr==null || qr.length==0) return null;
     const _Q={};
-    let k, v, pair;
     qr.split("&").forEach((item, i) => {
-        pair = item.split('=');
-        k = decodeURIComponent(pair[0]);
-        v = decodeURIComponent(pair[1] || '');
-        v = v.replace(/\++/g, " ").trim();
-        if (pair.length==1 || v.length==0) {
-          _Q[k]=true;
-          return;
-        }
-        const _v = parseFloat(v);
-        if (!Number.isNaN(_v)) v=_v;
+      const [k, v] = MKQ.#getPair(item);
         if (skipVal!=null) {
           if (Array.isArray(skipVal) && skipVal.includes(v)) return;
           if (skipVal==v) return;
