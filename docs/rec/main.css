@@ -181,4 +181,6 @@ body:not(.loading) > .loading {
 	margin: 0; /* Elimina el margen predeterminado */
 	grid-column: 2; /* Segunda columna */
   }
-  
+  select {
+	min-width: max-content;
+  }
