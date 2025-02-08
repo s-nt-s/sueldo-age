@@ -296,42 +296,44 @@ class Data {
     async getFullPuesto(id) {
         id = parseInt(id);
         if (isNaN(id)) return null;
-        const p = await this.#db.get_one("puesto", id);
+        const p = await this.#db.get_one("full_puesto", id);
 
         const __get = async (t, id) => id==null?null:await this.db.get_one(t, id);
+        const __toArr = (v) => (v||'').split(/\t/).filter(x=>x.length>0);
         const __getFromPuesto = async (table) => {
-            const arr = await this.#db.selectWhere("puesto_"+table+"."+table, "puesto", id);
+            //const arr = await this.#db.selectWhere("puesto_"+table+"."+table, "puesto", id);
+            const arr = __toArr(p[table]);
             if (arr.length==0) return [];
             const vals = await this.#db.get(table, ...arr);
             return vals;
         }
-
+        p.grupo = __toArr(p.grupo);
         [
             p.cuerpo,
             p.observacion,
             p.titulacion,
-            p.grupo,
-            p.cargo,
-            p.administracion,
-            p.tipo,
-            p.provision,
-            p.formacion,
+            //p.grupo,
+            //p.cargo,
+            //p.administracion,
+            //p.tipo,
+            //p.provision,
+            //p.formacion,
             p.unidad,
             p.localidad
         ] = await Promise.all([
             __getFromPuesto("cuerpo"),
             __getFromPuesto("observacion"),
             __getFromPuesto("titulacion"),
-            this.#db.selectWhere("puesto_grupo.grupo", "puesto", id),
-            __get("cargo.txt", p.cargo),
-            __get("administracion.txt", p.administracion),
-            __get("tipo_puesto.txt", p.tipo),
-            __get("provision.txt", p.provision),
-            __get("formacion.txt", p.formacion),
+            //this.#db.selectWhere("puesto_grupo.grupo", "puesto", id),
+            //__get("cargo.txt", p.cargo),
+            //__get("administracion.txt", p.administracion),
+            //__get("tipo_puesto.txt", p.tipo),
+            //__get("provision.txt", p.provision),
+            //__get("formacion.txt", p.formacion),
             __get("unidad", p.unidad),
             __get("localidad", p.localidad)
         ]);
-        if (p.localidad==null) p.localidad = await __get("localidad", unidad.localidad);
+        //if (p.localidad==null) p.localidad = await __get("localidad", unidad.localidad);
 
         [
             p.provincia,
