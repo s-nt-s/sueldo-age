@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Puesto</title>
+    <link href="../rec/main.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../rec/js/00-lib/cache.js"></script>
+    <script src="../rec/js/00-lib/Q.js"></script>
+    <script src="../rec/js/00-lib/supabaseClient.js"></script>
+    <script src="../rec/js/01-data.js"></script>
+    <script src="../rec/js/10-nomina.js"></script>
+    <script src="./main.js"></script>
+  </head>
+  <body class="loading">
+    <p class="loading"><span class="loader"></span>Cargando...</p>
+    <main>
+      <form>
+        <select id="grupo" multiple>
+        </select>
+        <select id="nivel" multiple>
+        </select>
+        <select id="organismo" multiple>
+        </select>
+        <select id="lugar" multiple>
+        </select>
+        <select id="provision" multiple>
+        </select>
+      </form>
+      <hr />
+      <p>
+        Datos obtenidos de
+        <a
+          id="retribuciones_url"
+          href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Documents/A%C3%91O%202024/Retribuciones%20personal%20funcionario.%20A%C3%B1o%202024%20(Real%20Decreto-ley%204%202024,%20de%2026%20de%20junio,)%20.pdf"
+          target="_blank"
+          >la tabla de retribuciones</a
+        >
+        <a
+          id="retribuciones_via"
+          class="info"
+          href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/CostesPersonal/EstadisticasInformes/Paginas/RetribucionesPersonalFuncionario.aspx"
+          target="_blank"
+          title="Otras tablas de retribuciones"
+          >(+)</a
+        >
+        y
+        <a
+          id="rpt_url"
+          href="https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html"
+          target="_blank"
+          >la RPT</a
+        >
+        <a
+          id="rpt_via"
+          class="info"
+          href="https://transparencia.gob.es/transparencia/transparencia_Home/index/PublicidadActiva/OrganizacionYEmpleo/Relaciones-Puestos-Trabajo.html"
+          target="_blank"
+          title="Todas las RPT"
+          >(+)</a
+        >
+      </p>
+    </main>
+    <footer>
+      <p>
+        Código fuente en
+        <a href="https://github.com/s-nt-s/sueldo-age" target="_blank">GitHub</a
+        >. Si falla o tienes alguna sugerencia pon un
+        <a href="https://github.com/s-nt-s/sueldo-age/issues" target="_blank"
+          >issue</a
+        >.
+      </p>
+    </footer>
+  </body>
+</html>
