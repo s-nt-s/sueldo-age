@@ -1,3 +1,5 @@
+const __GRUPO__ = ["A1", "A2", "C1", "C2", "E", "B"];
+
 class MKQ {
   #qr = '';
   #Q = {}
@@ -18,7 +20,7 @@ class MKQ {
       return [k, v];
     }
     if (pair.length!=1) throw "Bad query pair: "+item;
-    if (["A1", "A2", "C1", "C2", "E", "B"].includes(k)) return ["grupo", k];
+    if (__GRUPO__.includes(k)) return ["grupo", k];
     if (/^\d+$/.test(k)) return ["puesto", parseInt(k)];
     return [k, true];
   }
@@ -47,6 +49,8 @@ class MKQ {
     const new_qr = [N_QB, N_QA].flatMap((N) => {
       if (Object.keys(N).length==0) return [];
       return Object.entries(N).map(([k, v])=>{
+        if (k=="grupo" && __GRUPO__.includes(v)) return v;
+        if (k=="puesto" && /^\d+$/.test(v)) return v;
         return encodeURIComponent(k) + "=" + (encodeURIComponent(v)).replace(/%20/g, '+')
       });
     }).join("&").trim();

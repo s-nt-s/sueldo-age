@@ -18,6 +18,7 @@ function toString(n, dec) {
   });
 }
 
+
 const doMain = async function () {
   if (DATA.readyState == "loading") return;
   if (document.readyState == "loading") return;
@@ -34,8 +35,9 @@ const doMain = async function () {
       else a.title = t + " (datos de " + i.fecha + ")";
     }
   });
-  /** @type {Puesto} */
-  const puesto = await DATA.getPuesto(Q.get("puesto"));
+  /** @type {FullPuesto} */
+  const puesto = await DATA.getFullPuesto(Q.get("puesto"));
+  
   if (puesto == null) throw "Puesto no encontrado";
   document.title = "Puesto "+puesto.id;
   /** @type {Grupo} */
@@ -62,46 +64,29 @@ const doMain = async function () {
     });
   }
 
-  let unidad;
-  let localidad;
-  [
-    $("cargo").textContent,
-    $("administracion").textContent,
-    $("tipo").textContent,
-    $("provision").textContent,
-    $("formacion").textContent,
-    unidad,
-    localidad
-  ] = await Promise.all([
-    DATA.db.get_one("cargo.txt", puesto.cargo),
-    DATA.db.get_one("administracion.txt", puesto.administracion),
-    DATA.db.get_one("tipo_puesto.txt", puesto.tipo),
-    DATA.db.get_one("provision.txt", puesto.provision),
-    puesto.formacion==null?null:DATA.db.get_one("formacion.txt", puesto.formacion),
-    DATA.db.get_one("unidad", puesto.unidad),
-    DATA.db.get_one("localidad", (puesto.localidad??u.localidad))
-  ])
-  const c = await DATA.db.get_one("centro", unidad.centro);
-  const m = await DATA.db.get_one("ministerio", c.ministerio);
-  [unidad, c, m].forEach(x=>{
-    if (x.id>0) $("administracion").insertAdjacentHTML("afterend", `<dd>${x.txt}</dd>`);
+  $("cargo").textContent = puesto.cargo;
+  $("administracion").textContent = puesto.administracion;
+  $("tipo").textContent = puesto.tipo;
+  $("provision").textContent = puesto.provision;
+  $("formacion").textContent = puesto.formacion;
+  $("lugar").textContent = puesto.lugar;
+  
+  const __link = (x) =>{
+      if (x.txt!='¿?') return x.txt;
+      return "<a target='_blank' href='https://github.com/s-nt-s/age-db/issues/1'>¿?</a>";
+  }
+
+  puesto.organizacion.forEach(x=>{
+    $("administracion").insertAdjacentHTML("afterend", `<dd>${__link(x)}</dd>`);
   })
-  const pr = await DATA.db.get_one("provincia", localidad.provincia);
-  const pa = await DATA.db.get_one("pais", pr.pais);
-  [localidad, pr, pa].forEach(x=>{
-    if (x.id>0) $("lugar").insertAdjacentHTML("afterend", `<dd>${x.txt}</dd>`);
+  puesto.cuerpo.forEach(x=>{
+    $("cuerpo").insertAdjacentHTML("afterend", `<dd>${x.id}: ${__link(x)}</dd>`);
   })
-  const cuerpos = await getFromPuesto("cuerpo", puesto.id);
-  cuerpos.forEach(x=>{
-    $("cuerpo").insertAdjacentHTML("afterend", `<dd>${x.id}: ${x.txt}</dd>`);
+  puesto.observacion.forEach(x=>{
+    $("observacion").insertAdjacentHTML("afterend", `<dd>${x.id}: ${__link(x)}</dd>`);
   })
-  const obs = await getFromPuesto("observacion", puesto.id);
-  obs.forEach(x=>{
-    $("observacion").insertAdjacentHTML("afterend", `<dd>${x.id}: ${x.txt}</dd>`);
-  })
-  const tit = await getFromPuesto("titulacion", puesto.id);
-  tit.forEach(x=>{
-    $("titulacion").insertAdjacentHTML("afterend", `<dd>${x.id}: ${x.txt}</dd>`);
+  puesto.titulacion.forEach(x=>{
+    $("titulacion").insertAdjacentHTML("afterend", `<dd>${x.id}: ${__link(x)}</dd>`);
   })
 
   showMain();
@@ -109,16 +94,6 @@ const doMain = async function () {
   document.body.classList.remove("loading");
 };
 
-async function getFromPuesto(table, id) {
-  const arr = await DATA.db.selectWhere("puesto_"+table+"."+table, "puesto", id);
-  if (arr.length==0) return [];
-  const vals = await DATA.db.get(table, ...arr);
-  return vals.map(x=>{
-    if (x.txt!='¿?') return x;
-    x.txt = "<a target='_blank' href='https://github.com/s-nt-s/age-db/issues/1'>¿?</a>"
-    return x;
-  })
-}
 
 function showMain() {
   document.querySelectorAll("dd").forEach(dd=>{

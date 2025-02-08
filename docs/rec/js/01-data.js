@@ -292,5 +292,129 @@ class Data {
         p.grupo = grupo;
         return new Puesto(p);
     }
+
+    async getFullPuesto(id) {
+        id = parseInt(id);
+        if (isNaN(id)) return null;
+        const p = await this.#db.get_one("puesto", id);
+
+        const __get = async (t, id) => id==null?null:await this.db.get_one(t, id);
+        const __getFromPuesto = async (table) => {
+            const arr = await this.#db.selectWhere("puesto_"+table+"."+table, "puesto", id);
+            if (arr.length==0) return [];
+            const vals = await this.#db.get(table, ...arr);
+            return vals;
+        }
+
+        [
+            p.cuerpo,
+            p.observacion,
+            p.titulacion,
+            p.grupo,
+            p.cargo,
+            p.administracion,
+            p.tipo,
+            p.provision,
+            p.formacion,
+            p.unidad,
+            p.localidad
+        ] = await Promise.all([
+            __getFromPuesto("cuerpo"),
+            __getFromPuesto("observacion"),
+            __getFromPuesto("titulacion"),
+            this.#db.selectWhere("puesto_grupo.grupo", "puesto", id),
+            __get("cargo.txt", p.cargo),
+            __get("administracion.txt", p.administracion),
+            __get("tipo_puesto.txt", p.tipo),
+            __get("provision.txt", p.provision),
+            __get("formacion.txt", p.formacion),
+            __get("unidad", p.unidad),
+            __get("localidad", p.localidad)
+        ]);
+        if (p.localidad==null) p.localidad = await __get("localidad", unidad.localidad);
+
+        [
+            p.provincia,
+            p.centro
+        ] = await Promise.all([
+            __get("provincia", p.localidad.provincia),
+            __get("centro", p.unidad.centro),
+        ]);
+
+        [
+            p.pais,
+            p.ministerio
+        ] = await Promise.all([
+            __get("pais", p.provincia.pais),
+            __get("ministerio", p.centro.ministerio),
+        ]);
+
+        return new FullPuesto(p);
+    }
 }
 
+class FullPuesto extends Item {
+    /** @type {string[]} */
+    get grupo() {
+        return this._obj.grupo;
+    }
+    /** @type {number} */
+    get nivel() {
+        return this._obj.nivel;
+    }
+    /** @type {number} */
+    get especifico() {
+        return this._obj.especifico;
+    }
+    /** @type {string} */
+    get cargo() {
+        return this._obj.cargo;
+    }
+    /** @type {string} */
+    get administracion() {
+        return this._obj.administracion;
+    }
+    /** @type {string} */
+    get tipo() {
+        return this._obj.tipo;
+    }
+    /** @type {string} */
+    get provision() {
+        return this._obj.provision;
+    }
+    /** @type {string} */
+    get formacion() {
+        return this._obj.formacion;
+    }
+    /** @type {boolean} */
+    get vacante() {
+        return this._obj.vacante;
+    }
+    /** @type {id: number, txt: number}[] */
+    get organizacion() {
+        return [this._obj.unidad, this._obj.centro, this._obj.ministerio].filter(x=>x.id>0)
+    }
+    /** @type {string}[] */
+    get lugar() {
+        return [this._obj.localidad, this._obj.provincia, this._obj.pais]
+        .filter(x=>x.id>0)
+        .flatMap((x, i, arr) => {
+            if (i==0) return x.txt;
+            if (arr[i-1].txt==x.txt) return [];
+            return x.txt;
+        })
+        .join(", ");
+    }
+    /** @type {id: number, txt: number}[] */
+    get cuerpo() {
+        return this._obj.cuerpo;
+    }
+    /** @type {id: number, txt: number}[] */
+    get observacion() {
+        return this._obj.observacion;
+    }
+    /** @type {id: number, txt: number}[] */
+    get titulacion() {
+        return this._obj.titulacion;
+    }
+}
