@@ -398,11 +398,12 @@ class FullPuesto extends Item {
     get lugar() {
         return [this._obj.localidad, this._obj.provincia, this._obj.pais]
         .filter(x=>x.id>0)
-        .flatMap((x, i, arr) => {
-            if (i==0) return x.txt;
-            if (arr[i-1].txt==x.txt) return [];
-            return x.txt;
+        .map(x=>{
+            const arr = x.txt.split(/, /);
+            if (arr.length!=2) return x.txt;
+            return arr[1]+' '+arr[0];
         })
+        .filter((txt, i, arr) => (i==0) || (arr[i-1]!=txt))
         .join(", ");
     }
     /** @type {id: number, txt: number}[] */
