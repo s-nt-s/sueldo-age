@@ -276,12 +276,6 @@ class Data {
         if (this.#nivel == null) return "loading";
         return "complete";
     }
-    async nivelesEnGrupo(val) {
-        return await this.#db.selectWhere("grupo_nivel.nivel", "grupo", val);
-    }
-    async gruposEnNivel(val) {
-        return await this.#db.selectWhere("grupo_nivel.grupo", "nivel", val);
-    }
     async getPuesto(id) {
         id = parseInt(id);
         if (isNaN(id)) return null;
